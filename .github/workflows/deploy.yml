@@ -55,6 +55,7 @@ jobs:
 
   # ─────────────────────────────────────────────────────────────
   # SSH into the OCI VM and redeploy
+  # Auto-generates .env from GitHub Secrets at deployment time
   # ─────────────────────────────────────────────────────────────
   deploy:
     name: Deploy to OCI VM
@@ -71,16 +72,54 @@ jobs:
           script: |
             set -e
 
-            # Login to OCIR on the VM so it can pull private images
+            echo "=== Deployment Started ==="
+
+            # Ensure deployment directory exists
+            mkdir -p "${{ secrets.DEPLOY_PATH }}"
+            cd "${{ secrets.DEPLOY_PATH }}"
+
+            # Generate .env from GitHub Secrets
+            # (Secrets are injected securely at runtime, never stored in git)
+            cat > .env <<'ENVEOF'
+            DB_NAME=crudapp
+            DB_USER=cruduser
+            DB_PASSWORD=${{ secrets.DB_PASSWORD }}
+            OCIR_REGISTRY=${{ secrets.OCIR_REGISTRY }}
+            OCIR_REPO=${{ secrets.OCIR_REPO }}
+            TAG=latest
+            ENVEOF
+
+            # Verify .env was created successfully
+            if [ ! -f .env ]; then
+              echo "✗ Error: .env file not created"
+              exit 1
+            fi
+            echo "✓ .env file generated from GitHub Secrets"
+
+            # Download docker-compose.yml from GitHub if not present
+            if [ ! -f docker-compose.yml ]; then
+              echo "Downloading docker-compose.yml from GitHub..."
+              wget -q https://raw.githubusercontent.com/${{ github.repository }}/main/docker-compose.yml
+              echo "✓ docker-compose.yml downloaded"
+            fi
+
+            # Login to OCIR on the VM using credentials from GitHub Secrets
             echo "${{ secrets.OCIR_TOKEN }}" | \
               docker login "${{ secrets.OCIR_REGISTRY }}" \
               -u "${{ secrets.OCIR_USERNAME }}" --password-stdin
+            echo "✓ Logged in to OCIR"
 
-            cd "${{ secrets.DEPLOY_PATH }}"
-
-            # Pull the latest images and restart changed containers only
+            # Pull the latest images
             docker compose pull
+            echo "✓ Images pulled from OCIR"
+
+            # Restart containers with new images
             docker compose up -d --remove-orphans
+            echo "✓ Containers started/updated"
 
             # Clean up old dangling images to save disk space
             docker image prune -f
+            echo "✓ Old images cleaned up"
+
+            echo "=== Deployment Complete ==="
+            docker compose ps
