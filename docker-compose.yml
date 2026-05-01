@@ -37,17 +37,5 @@
         NODE_ENV: production
       restart: unless-stopped
 
-    nginx:
-      image: ${OCIR_REGISTRY}/${OCIR_REPO}/nginx:${TAG:-latest}
-      ports:
-        - "80:80"
-        - "443:443"
-      volumes:
-        - ./nginx/certs/cicd.aahmad.app:/etc/letsencrypt:ro
-      depends_on:
-        - backend
-        - frontend
-      restart: unless-stopped
-
   volumes:
     pgdata:

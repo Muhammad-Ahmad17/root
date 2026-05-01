@@ -44,25 +44,6 @@ jobs:
           cache-from: type=gha
           cache-to:   type=gha,mode=max
 
-      - name: Prepare SSL certificates for nginx
-        run: |
-          mkdir -p nginx/certs/cicd.aahmad.app
-
-          echo "${{ secrets.SSL_CERTIFICATE }}" | base64 -d > nginx/certs/cicd.aahmad.app/fullchain.pem
-          echo "${{ secrets.SSL_PRIVATE_KEY }}"  | base64 -d > nginx/certs/cicd.aahmad.app/privkey.pem
-          echo "${{ secrets.SSL_CHAIN }}"        | base64 -d > nginx/certs/cicd.aahmad.app/chain.pem
-          echo "${{ secrets.SSL_CERT }}"         | base64 -d > nginx/certs/cicd.aahmad.app/cert.pem
-
-          ls -la nginx/certs/cicd.aahmad.app/
-
-      - name: Build & push nginx image (with SSL certificates)
-        uses: docker/build-push-action@v5
-        with:
-          context: ./nginx
-          push: true
-          tags: ${{ secrets.OCIR_REGISTRY }}/${{ secrets.OCIR_REPO }}/nginx:latest
-          no-cache: true
-
   # ─────────────────────────────────────────────────────────────
   # SSH into the OCI VM and redeploy
   # ─────────────────────────────────────────────────────────────
@@ -120,34 +101,9 @@ jobs:
             docker compose pull
             echo "✓ Images pulled from OCIR"
 
-            # Explicitly tear down nginx so port 443 socket is fully released
-            # before the new container tries to bind it
-            docker compose stop nginx
-            docker compose rm -f nginx
-            sleep 2
-            echo "✓ nginx torn down, ports released"
-
             # Bring all containers up with fresh images
             docker compose up -d --force-recreate --remove-orphans
             echo "✓ Containers started/updated"
-
-            # Wait for nginx to fully initialize
-            sleep 5
-
-            # Validate nginx config inside the live container
-            # (runs after upstreams and certs are reachable)
-            docker compose exec nginx nginx -t \
-              || (echo "✗ nginx config invalid!" && docker compose logs nginx && exit 1)
-            echo "✓ nginx config valid"
-
-            # Verify both ports are actually bound on the host
-            docker ps --filter "name=nginx" --format "{{.Ports}}" | grep -q "0.0.0.0:443" \
-              || (echo "✗ Port 443 not bound!" && docker compose logs nginx && exit 1)
-            echo "✓ Port 443 confirmed bound"
-
-            docker ps --filter "name=nginx" --format "{{.Ports}}" | grep -q "0.0.0.0:80" \
-              || (echo "✗ Port 80 not bound!" && docker compose logs nginx && exit 1)
-            echo "✓ Port 80 confirmed bound"
 
             # Clean up dangling images
             docker image prune -f
