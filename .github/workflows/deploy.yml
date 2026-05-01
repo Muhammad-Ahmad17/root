@@ -61,8 +61,7 @@ jobs:
           context: ./nginx
           push: true
           tags: ${{ secrets.OCIR_REGISTRY }}/${{ secrets.OCIR_REPO }}/nginx:latest
-          cache-from: type=gha
-          cache-to:   type=gha,mode=max
+          no-cache: true
 
   # ─────────────────────────────────────────────────────────────
   # SSH into the OCI VM and redeploy
