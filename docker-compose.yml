@@ -42,8 +42,6 @@ services:
     ports:
       - "80:80"
       - "443:443"
-    volumes:
-      - /home/ubuntu/crudapp/certbot/conf:/etc/letsencrypt:ro
     depends_on:
       - backend
       - frontend
