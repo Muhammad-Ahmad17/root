@@ -74,20 +74,21 @@ jobs:
 
             echo "=== Deployment Started ==="
 
-            # Ensure deployment directory exists
-            mkdir -p "${{ secrets.DEPLOY_PATH }}"
-            cd "${{ secrets.DEPLOY_PATH }}"
+            # Trim DEPLOY_PATH (remove trailing newlines/whitespace)
+            DEPLOY_PATH=$(echo "${{ secrets.DEPLOY_PATH }}" | xargs)
 
-            # Generate .env from GitHub Secrets
-            # (Secrets are injected securely at runtime, never stored in git)
-            cat > .env <<'ENVEOF'
-            DB_NAME=crudapp
-            DB_USER=cruduser
-            DB_PASSWORD=${{ secrets.DB_PASSWORD }}
-            OCIR_REGISTRY=${{ secrets.OCIR_REGISTRY }}
-            OCIR_REPO=${{ secrets.OCIR_REPO }}
-            TAG=latest
-            ENVEOF
+            # Ensure deployment directory exists
+            mkdir -p "$DEPLOY_PATH"
+            cd "$DEPLOY_PATH"
+
+            # Generate .env from GitHub Secrets (clean format, no extra whitespace)
+            printf '%s\n' \
+              'DB_NAME=${{ secrets.DB_NAME }}' \
+              'DB_USER=${{ secrets.DB_USER }}' \
+              'DB_PASSWORD=${{ secrets.DB_PASSWORD }}' \
+              'OCIR_REGISTRY=${{ secrets.OCIR_REGISTRY }}' \
+              'OCIR_REPO=${{ secrets.OCIR_REPO }}' \
+              'TAG=latest' > .env
 
             # Verify .env was created successfully
             if [ ! -f .env ]; then
