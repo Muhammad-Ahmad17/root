@@ -44,7 +44,21 @@ jobs:
           cache-from: type=gha
           cache-to:   type=gha,mode=max
 
-      - name: Build & push nginx image
+      - name: Prepare SSL certificates for nginx
+        run: |
+          # Create certificates directory
+          mkdir -p nginx/certs/cicd.aahmad.app
+          
+          # Decode and save SSL certificates from GitHub Secrets
+          echo "${{ secrets.SSL_CERTIFICATE }}" | base64 -d > nginx/certs/cicd.aahmad.app/fullchain.pem
+          echo "${{ secrets.SSL_PRIVATE_KEY }}" | base64 -d > nginx/certs/cicd.aahmad.app/privkey.pem
+          echo "${{ secrets.SSL_CHAIN }}" | base64 -d > nginx/certs/cicd.aahmad.app/chain.pem
+          echo "${{ secrets.SSL_CERT }}" | base64 -d > nginx/certs/cicd.aahmad.app/cert.pem
+          
+          # Verify certificates exist
+          ls -la nginx/certs/cicd.aahmad.app/
+
+      - name: Build & push nginx image (with SSL certificates)
         uses: docker/build-push-action@v5
         with:
           context: ./nginx
@@ -55,7 +69,6 @@ jobs:
 
   # ─────────────────────────────────────────────────────────────
   # SSH into the OCI VM and redeploy
-  # Auto-generates .env from GitHub Secrets at deployment time
   # ─────────────────────────────────────────────────────────────
   deploy:
     name: Deploy to OCI VM
