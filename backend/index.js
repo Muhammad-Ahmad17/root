@@ -68,25 +68,12 @@ const server = app.listen(PORT, () => {
 // Graceful Shutdown
 // Close the pool and server cleanly on termination signals
 // ─────────────────────────────────────────────────────────────
-process.on('SIGINT', () => {
-  console.log('\nShutting down server...');
-  server.close(() => {
-    console.log('Server closed');
-  });
-  pool.end(() => {
-    console.log('Database pool closed');
-    process.exit(0);
-  });
-});
 
-process.on('SIGTERM', () => {
+const shutdown = () => {
   console.log('\nShutting down server...');
-  server.close(() => {
-    console.log('Server closed');
-  });
-  pool.end(() => {
-    console.log('Database pool closed');
-    process.exit(0);
-  });
-});
+  server.close(() => console.log('Server closed'));
+  pool.end(() => { console.log('Database pool closed'); process.exit(0); });
+};
 
+process.on('SIGINT', shutdown);
+process.on('SIGTERM', shutdown);

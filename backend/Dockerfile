@@ -9,4 +9,5 @@ ENV NODE_ENV=production
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 EXPOSE 5000
-CMD ["node", "index.js"]
+
+CMD ["sh", "-c", "npm run migrate && node index.js"]
