@@ -132,14 +132,22 @@ jobs:
             docker compose up -d --force-recreate --remove-orphans
             echo "✓ Containers started/updated"
 
-            # Wait for nginx to initialize then verify both ports are bound
+            # Wait for nginx to fully initialize
             sleep 5
+
+            # Validate nginx config inside the live container
+            # (runs after upstreams and certs are reachable)
+            docker compose exec nginx nginx -t \
+              || (echo "✗ nginx config invalid!" && docker compose logs nginx && exit 1)
+            echo "✓ nginx config valid"
+
+            # Verify both ports are actually bound on the host
             docker ps --filter "name=nginx" --format "{{.Ports}}" | grep -q "0.0.0.0:443" \
-              || (echo "✗ Port 443 not bound! nginx logs:" && docker compose logs nginx && exit 1)
+              || (echo "✗ Port 443 not bound!" && docker compose logs nginx && exit 1)
             echo "✓ Port 443 confirmed bound"
 
             docker ps --filter "name=nginx" --format "{{.Ports}}" | grep -q "0.0.0.0:80" \
-              || (echo "✗ Port 80 not bound! nginx logs:" && docker compose logs nginx && exit 1)
+              || (echo "✗ Port 80 not bound!" && docker compose logs nginx && exit 1)
             echo "✓ Port 80 confirmed bound"
 
             # Clean up dangling images

@@ -7,7 +7,6 @@ COPY nginx.conf /etc/nginx/conf.d/default.conf
 COPY certs/cicd.aahmad.app /etc/letsencrypt/live/cicd.aahmad.app
 
 # Verify certificates are present at build time
-RUN ls -la /etc/letsencrypt/live/cicd.aahmad.app/ && \
-    nginx -t  # validate nginx config at build time too
+RUN ls -la /etc/letsencrypt/live/cicd.aahmad.app/
 
 EXPOSE 80 443
