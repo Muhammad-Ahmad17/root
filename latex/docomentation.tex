@@ -1,1643 +1,901 @@
-\documentclass[a4paper,11pt]{article}
+\documentclass[aspectratio=169]{beamer}
 
-%%────────────────────────────────────────────────────────────────────────────
-%%  PACKAGES
-%%────────────────────────────────────────────────────────────────────────────
-\usepackage[a4paper, top=2.8cm, bottom=2.8cm, left=2.6cm, right=2.6cm]{geometry}
 \usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
-\usepackage{microtype}
 \usepackage{lmodern}
 \usepackage{xcolor}
-\usepackage{pagecolor}
 \usepackage{tikz}
-\usetikzlibrary{
-  shapes.geometric, arrows.meta, positioning, fit,
-  backgrounds, calc, decorations.pathmorphing,
-  decorations.markings, shadows, patterns, shadows.blur
-}
-\usepackage{booktabs}
-\usepackage{array}
-\usepackage{tabularx}
-\usepackage{longtable}
-\usepackage{colortbl}
+\usetikzlibrary{arrows.meta,positioning,fit,backgrounds,calc}
 \usepackage{listings}
-\usepackage{fancyhdr}
-\usepackage{titlesec}
-\usepackage[hidelinks]{hyperref}
-\usepackage{float}
-\usepackage{mdframed}
-\usepackage{enumitem}
-\usepackage{tocloft}
-\usepackage{graphicx}
-\usepackage{amssymb}
 \usepackage{pifont}
-\usepackage{setspace}
-\usepackage{parskip}
-\usepackage{needspace}
-\usepackage{anyfontsize}
-\usepackage{dashrule}
-\usepackage{etoolbox}
 
-%%────────────────────────────────────────────────────────────────────────────
-%%  COLOUR PALETTE  — Refined Slate / Steel Blue
-%%────────────────────────────────────────────────────────────────────────────
-%%  Paper tones — cool off-white, not creamy
-\definecolor{paperBg}{HTML}{F0F2F5}        %% cool light gray-white
-\definecolor{paperDark}{HTML}{E2E6EC}      %% code block background
-\definecolor{paperMid}{HTML}{E8ECF1}       %% table row tint
-\definecolor{paperStripe}{HTML}{DDE2EA}    %% alternate row
+%%─────────────────────────────────────────────────────────────────
+%%  COLOURS — creamy off-white
+%%─────────────────────────────────────────────────────────────────
+\definecolor{creamBg}{HTML}{FAF6EE}
+\definecolor{creamDk}{HTML}{EDE4CC}
+\definecolor{creamMd}{HTML}{E4D8B8}
+\definecolor{creamRl}{HTML}{C8B888}
 
-%%  Ink & text — cool near-black
-\definecolor{inkBlack}{HTML}{0F1923}       %% deep navy-black
-\definecolor{inkNavy}{HTML}{1A2B3C}        %% dark navy headings
-\definecolor{inkMed}{HTML}{2C4460}         %% medium slate
+\definecolor{inkK}{HTML}{1A1208}
+\definecolor{inkB}{HTML}{2E1E08}
+\definecolor{inkM}{HTML}{4A3418}
 
-%%  Accent palette — cool, professional
-\definecolor{accentBlue}{HTML}{1B4F8A}     %% deep steel blue
-\definecolor{accentBlueLight}{HTML}{C8D9EF}
-\definecolor{accentCyan}{HTML}{1A7FA0}     %% teal-cyan
-\definecolor{accentCyanLight}{HTML}{C4E4EF}
-\definecolor{accentSlate}{HTML}{3A5F7A}    %% medium slate
-\definecolor{accentSlateLight}{HTML}{C8DCE8}
-\definecolor{accentIndigo}{HTML}{3B3F8C}   %% deep indigo
-\definecolor{accentIndigoLight}{HTML}{D0D2EE}
-\definecolor{accentGreen}{HTML}{1A6B4A}    %% deep green
-\definecolor{accentGreenLight}{HTML}{C4E0D4}
+\definecolor{cTeal}{HTML}{1B5C5E}
+\definecolor{lTeal}{HTML}{C6DEDE}
+\definecolor{cAmber}{HTML}{9A5A10}
+\definecolor{lAmber}{HTML}{F2DEB8}
+\definecolor{cSage}{HTML}{3A6850}
+\definecolor{lSage}{HTML}{C6DDD4}
+\definecolor{cRust}{HTML}{8A2E18}
+\definecolor{lRust}{HTML}{F0CFBF}
+\definecolor{cInd}{HTML}{2E3480}
+\definecolor{lInd}{HTML}{D0D2EE}
+\definecolor{cOk}{HTML}{1A5E3A}
+\definecolor{lOk}{HTML}{C4DDD0}
 
-%%  UI elements
-\definecolor{ruleColor}{HTML}{7A9BBF}      %% steel blue divider
-\definecolor{ruleLight}{HTML}{A8C0D8}      %% lighter rule
-\definecolor{nodeCyan}{HTML}{D0EAF2}
-\definecolor{nodeBlue}{HTML}{D0DFF0}
-\definecolor{nodeSlate}{HTML}{CDD9E5}
-\definecolor{nodeIndigo}{HTML}{D2D4F0}
-\definecolor{nodeGray}{HTML}{DDE2EA}
-\definecolor{successFg}{HTML}{1A6B4A}
-\definecolor{successBg}{HTML}{C4E0D4}
-\definecolor{accentOrange}{HTML}{C05A10}
-\definecolor{accentOrangeLight}{HTML}{F5DEC8}
-\definecolor{nodeOrange}{HTML}{F0E0CC}
+%%─────────────────────────────────────────────────────────────────
+%%  BEAMER
+%%─────────────────────────────────────────────────────────────────
+\usetheme{default}
+\usecolortheme{default}
+\setbeamertemplate{navigation symbols}{}
+\setbeamercolor{background canvas}{bg=creamBg}
+\setbeamercolor{normal text}{fg=inkK}
+\setbeamertemplate{itemize item}{\textcolor{cAmber}{\rule{5pt}{5pt}}}
+\setbeamertemplate{itemize subitem}{\textcolor{cTeal}{\rule{4pt}{4pt}}}
 
-%%────────────────────────────────────────────────────────────────────────────
-%%  DOCUMENT COLOURS
-%%────────────────────────────────────────────────────────────────────────────
-\pagecolor{paperBg}
-\color{inkBlack}
-
-%%────────────────────────────────────────────────────────────────────────────
-%%  SECTION STYLING
-%%────────────────────────────────────────────────────────────────────────────
-\titleformat{\section}{%
-  \sffamily\LARGE\bfseries\color{inkNavy}%
-}{%
-  \colorbox{accentBlue}{\textcolor{paperBg}{\makebox[1.6em]{\thesection}}}%
-}{0.75em}{}[%
-  \vspace{2pt}\color{ruleColor}\hdashrule[0.5ex]{\linewidth}{1.2pt}{2pt}%
-]
-
-\titleformat{\subsection}{%
-  \sffamily\large\bfseries\color{accentBlue}%
-}{\thesubsection}{0.6em}{}[%
-  \vspace{1pt}\color{ruleLight}\hdashrule[0.5ex]{\linewidth}{0.6pt}{1.5pt}%
-]
-
-\titleformat{\subsubsection}{%
-  \sffamily\normalsize\bfseries\color{inkMed}%
-}{\thesubsubsection}{0.5em}{}
-
-\titlespacing*{\section}{0pt}{22pt}{10pt}
-\titlespacing*{\subsection}{0pt}{16pt}{7pt}
-\titlespacing*{\subsubsection}{0pt}{10pt}{4pt}
-
-%%────────────────────────────────────────────────────────────────────────────
-%%  HEADER / FOOTER
-%%────────────────────────────────────────────────────────────────────────────
-\pagestyle{fancy}
-\fancyhf{}
-\fancyhead[L]{%
-  \sffamily\small\color{accentBlue}%
-  Project Architecture \& Deployment Guide%
+\setbeamertemplate{frametitle}{%
+  \vspace{9pt}%
+  {\sffamily\Large\bfseries\color{inkB}\insertframetitle}%
+  \ifx\insertframesubtitle\empty\else
+    \\[2pt]{\sffamily\small\color{cTeal}\insertframesubtitle}%
+  \fi
+  \par\vspace{3pt}%
+  {\color{creamRl}\hrule height 1pt}%
+  \vspace{3pt}%
 }
-\fancyhead[R]{\small\color{inkMed}\thepage}
-\fancyfoot[C]{%
-  \color{ruleColor}\hdashrule{4cm}{0.5pt}{1.5pt}%
+
+\setbeamertemplate{footline}{%
+  \begin{beamercolorbox}[wd=\paperwidth,ht=16pt,dp=5pt]{}%
+    \hspace{14pt}%
+    {\tiny\color{inkM}\sffamily Project Architecture \& Deployment}%
+    \hfill
+    {\tiny\color{inkM}\sffamily\insertframenumber/\inserttotalframenumber}%
+    \hspace{14pt}%
+  \end{beamercolorbox}%
 }
-\renewcommand{\headrulewidth}{0pt}
-\setlength{\headheight}{14pt}
 
-%%────────────────────────────────────────────────────────────────────────────
-%%  TABLE OF CONTENTS
-%%────────────────────────────────────────────────────────────────────────────
-\renewcommand{\cftsecfont}{\sffamily\bfseries\color{inkNavy}}
-\renewcommand{\cftsubsecfont}{\color{inkMed}}
-\renewcommand{\cftsecpagefont}{\bfseries\color{accentBlue}}
-\renewcommand{\cftsubsecpagefont}{\color{inkMed}}
-\renewcommand{\cftdotsep}{4}
-\setlength{\cftbeforesecskip}{4pt}
-
-%%────────────────────────────────────────────────────────────────────────────
-%%  CODE LISTINGS
-%%────────────────────────────────────────────────────────────────────────────
-\lstdefinestyle{docCode}{
-  backgroundcolor=\color{paperDark},
-  basicstyle=\ttfamily\footnotesize\color{inkNavy},
-  keywordstyle=\bfseries\color{accentBlue},
-  commentstyle=\itshape\color{accentSlate},
-  stringstyle=\color{accentCyan},
-  numberstyle=\tiny\color{ruleColor},
+%%─────────────────────────────────────────────────────────────────
+%%  LISTINGS
+%%─────────────────────────────────────────────────────────────────
+\lstset{
+  backgroundcolor=\color{creamDk},
+  basicstyle=\ttfamily\scriptsize\color{inkB},
+  keywordstyle=\bfseries\color{cTeal},
+  commentstyle=\itshape\color{cSage},
+  stringstyle=\color{cAmber},
   breaklines=true,
-  frame=l,
-  framerule=2.5pt,
-  rulecolor=\color{accentBlue},
-  xleftmargin=12pt,
-  xrightmargin=6pt,
-  tabsize=2,
-  showstringspaces=false,
-  aboveskip=8pt,
-  belowskip=8pt,
+  frame=l, framerule=2pt, rulecolor=\color{cAmber},
+  xleftmargin=8pt, tabsize=2, showstringspaces=false,
+  aboveskip=3pt, belowskip=3pt,
 }
-\lstset{style=docCode}
 
-%%────────────────────────────────────────────────────────────────────────────
-%%  CUSTOM ENVIRONMENTS
-%%────────────────────────────────────────────────────────────────────────────
-\newmdenv[
-  linecolor=ruleColor,
-  backgroundcolor=paperMid,
-  linewidth=1.5pt,
-  topline=false, rightline=false, bottomline=false,
-  leftline=true,
-  innerleftmargin=12pt, innerrightmargin=10pt,
-  innertopmargin=8pt, innerbottommargin=8pt,
-  skipabove=6pt, skipbelow=6pt,
-]{notebox}
-
-\newmdenv[
-  linecolor=successFg,
-  backgroundcolor=successBg,
-  linewidth=0pt,
-  roundcorner=4pt,
-  innerleftmargin=12pt, innerrightmargin=10pt,
-  innertopmargin=8pt, innerbottommargin=8pt,
-  skipabove=6pt, skipbelow=6pt,
-]{greenbox}
-
-%%────────────────────────────────────────────────────────────────────────────
-%%  HELPERS
-%%────────────────────────────────────────────────────────────────────────────
-\newcommand{\cmark}{\textcolor{successFg}{\ding{51}}\;}
-\newcommand{\bulletdot}{\textcolor{accentBlue}{\ding{108}}\;}
-
-%%────────────────────────────────────────────────────────────────────────────
-%%  TIKZ BASE STYLES
-%%────────────────────────────────────────────────────────────────────────────
+%%─────────────────────────────────────────────────────────────────
+%%  TIKZ STYLES  — ALL flat, no parameterised keys
+%%─────────────────────────────────────────────────────────────────
 \tikzset{
-  %% ── Service node styles ──────────────────────────────────────────────
-  blueBox/.style={
-    draw=accentBlue, fill=nodeBlue,
-    rounded corners=6pt,
-    minimum width=#1, minimum height=1.1cm,
-    align=center, font=\sffamily\small\bfseries,
-    text=accentBlue, inner sep=7pt,
-    drop shadow={shadow blur steps=5, shadow xshift=1.5pt,
-                 shadow yshift=-1.5pt, fill=accentBlue!15}
-  },
-  blueBox/.default=3.4cm,
-  cyanBox/.style={
-    draw=accentCyan, fill=nodeCyan,
-    rounded corners=6pt,
-    minimum width=#1, minimum height=1.1cm,
-    align=center, font=\sffamily\small\bfseries,
-    text=accentCyan, inner sep=7pt,
-    drop shadow={shadow blur steps=5, shadow xshift=1.5pt,
-                 shadow yshift=-1.5pt, fill=accentCyan!15}
-  },
-  cyanBox/.default=3.4cm,
-  slateBox/.style={
-    draw=accentSlate, fill=nodeSlate,
-    rounded corners=6pt,
-    minimum width=#1, minimum height=1.1cm,
-    align=center, font=\sffamily\small\bfseries,
-    text=accentSlate, inner sep=7pt,
-    drop shadow={shadow blur steps=5, shadow xshift=1.5pt,
-                 shadow yshift=-1.5pt, fill=accentSlate!15}
-  },
-  slateBox/.default=3.4cm,
-  indigoBox/.style={
-    draw=accentIndigo, fill=nodeIndigo,
-    rounded corners=6pt,
-    minimum width=#1, minimum height=1.1cm,
-    align=center, font=\sffamily\small\bfseries,
-    text=accentIndigo, inner sep=7pt,
-    drop shadow={shadow blur steps=5, shadow xshift=1.5pt,
-                 shadow yshift=-1.5pt, fill=accentIndigo!15}
-  },
-  indigoBox/.default=3.4cm,
-  orangeBox/.style={
-    draw=accentOrange, fill=nodeOrange,
-    rounded corners=6pt,
-    minimum width=#1, minimum height=1.1cm,
-    align=center, font=\sffamily\small\bfseries,
-    text=accentOrange, inner sep=7pt,
-    drop shadow={shadow blur steps=5, shadow xshift=1.5pt,
-                 shadow yshift=-1.5pt, fill=accentOrange!15}
-  },
-  orangeBox/.default=3.4cm,
-  grayBox/.style={
-    draw=inkMed!40, fill=nodeGray,
-    rounded corners=6pt,
-    minimum width=#1, minimum height=1.1cm,
-    align=center, font=\sffamily\small\bfseries,
-    text=inkMed, inner sep=7pt
-  },
-  grayBox/.default=3.4cm,
-  %% ── Flow step styles ─────────────────────────────────────────────────
-  flowStep/.style={
-    draw=ruleColor, fill=paperMid,
-    rounded corners=5pt,
-    minimum width=#1, minimum height=0.9cm,
-    align=center, font=\small, text=inkBlack, inner sep=7pt,
-    drop shadow={shadow blur steps=4, shadow xshift=1pt,
-                 shadow yshift=-1pt, fill=ruleColor!20}
-  },
-  flowStep/.default=11cm,
-  flowTrigger/.style={
-    draw=accentBlue, fill=accentBlueLight,
-    rounded corners=6pt,
-    minimum width=#1, minimum height=1.0cm,
-    align=center, font=\sffamily\small\bfseries,
-    text=inkNavy, inner sep=7pt,
-    drop shadow={shadow blur steps=5, shadow xshift=1.5pt,
-                 shadow yshift=-1.5pt, fill=accentBlue!20}
-  },
-  flowTrigger/.default=11cm,
-  flowOK/.style={
-    draw=successFg, fill=successBg,
-    rounded corners=5pt,
-    minimum width=#1, minimum height=0.9cm,
-    align=center, font=\sffamily\small\bfseries,
-    text=successFg, inner sep=7pt,
-    drop shadow={shadow blur steps=4, shadow xshift=1pt,
-                 shadow yshift=-1pt, fill=successFg!15}
-  },
-  flowOK/.default=11cm,
-  flowBuild/.style={
-    draw=accentCyan!80, fill=accentCyanLight,
-    rounded corners=5pt,
-    minimum width=#1, minimum height=0.9cm,
-    align=center, font=\small, text=inkBlack, inner sep=7pt,
-    drop shadow={shadow blur steps=4, shadow xshift=1pt,
-                 shadow yshift=-1pt, fill=accentCyan!15}
-  },
-  flowBuild/.default=11cm,
-  flowPhase/.style={
-    draw=accentSlate!50, fill=accentSlate!8,
-    rounded corners=5pt,
-    minimum width=#1, minimum height=0.9cm,
-    align=center, font=\small, text=inkBlack, inner sep=7pt
-  },
-  flowPhase/.default=11cm,
-  %% ── Arrows ───────────────────────────────────────────────────────────
-  fatarrow/.style={
-    -{Stealth[length=8pt,width=6pt]},
-    line width=2pt, color=accentBlue
-  },
-  thinarow/.style={
-    -{Stealth[length=5pt,width=4pt]},
-    line width=1pt, color=inkMed
-  },
-  dashedarrow/.style={
-    -{Stealth[length=5pt]},
-    dashed, line width=0.9pt, color=inkMed!70
-  },
-  greenarrow/.style={
-    -{Stealth[length=7pt,width=5pt]},
-    line width=1.8pt, color=successFg
-  },
+  %% ── named service boxes ─────────────────────────────────────
+  NTeal/.style={draw=cTeal, fill=lTeal, rounded corners=5pt,
+    minimum width=2.8cm, minimum height=1.2cm,
+    align=center, font=\sffamily\small\bfseries, text=cTeal,
+    inner sep=5pt},
+  NAmber/.style={draw=cAmber, fill=lAmber, rounded corners=5pt,
+    minimum width=2.8cm, minimum height=1.2cm,
+    align=center, font=\sffamily\small\bfseries, text=cAmber,
+    inner sep=5pt},
+  NSage/.style={draw=cSage, fill=lSage, rounded corners=5pt,
+    minimum width=2.8cm, minimum height=1.2cm,
+    align=center, font=\sffamily\small\bfseries, text=cSage,
+    inner sep=5pt},
+  NRust/.style={draw=cRust, fill=lRust, rounded corners=5pt,
+    minimum width=2.8cm, minimum height=1.2cm,
+    align=center, font=\sffamily\small\bfseries, text=cRust,
+    inner sep=5pt},
+  NInd/.style={draw=cInd, fill=lInd, rounded corners=5pt,
+    minimum width=2.8cm, minimum height=1.2cm,
+    align=center, font=\sffamily\small\bfseries, text=cInd,
+    inner sep=5pt},
+  NGray/.style={draw=creamRl, fill=creamDk, rounded corners=5pt,
+    minimum width=2.8cm, minimum height=1.2cm,
+    align=center, font=\sffamily\small\bfseries, text=inkM,
+    inner sep=5pt},
+  %% ── flow boxes ───────────────────────────────────────────────
+  Flow/.style={draw=creamRl, fill=creamDk, rounded corners=4pt,
+    minimum width=11cm, minimum height=0.75cm,
+    align=center, font=\sffamily\small, text=inkK, inner sep=5pt},
+  Trig/.style={draw=cAmber, fill=lAmber, rounded corners=5pt,
+    minimum width=11cm, minimum height=0.80cm,
+    align=center, font=\sffamily\small\bfseries, text=inkB,
+    inner sep=5pt},
+  Good/.style={draw=cOk, fill=lOk, rounded corners=4pt,
+    minimum width=11cm, minimum height=0.75cm,
+    align=center, font=\sffamily\small\bfseries, text=cOk,
+    inner sep=5pt},
+  PhTeal/.style={draw=cTeal, fill=lTeal, rounded corners=4pt,
+    minimum width=11cm, minimum height=0.75cm,
+    align=center, font=\sffamily\small, text=inkK, inner sep=5pt},
+  PhSage/.style={draw=cSage, fill=lSage, rounded corners=4pt,
+    minimum width=11cm, minimum height=0.75cm,
+    align=center, font=\sffamily\small, text=inkK, inner sep=5pt},
+  PhRust/.style={draw=cRust, fill=lRust, rounded corners=4pt,
+    minimum width=11cm, minimum height=0.75cm,
+    align=center, font=\sffamily\small, text=inkK, inner sep=5pt},
+  PhAmber/.style={draw=cAmber, fill=lAmber, rounded corners=4pt,
+    minimum width=11cm, minimum height=0.75cm,
+    align=center, font=\sffamily\small, text=inkK, inner sep=5pt},
+  %% ── wide flow boxes (CI/CD slide) ───────────────────────────
+  WFlow/.style={draw=creamRl, fill=creamDk, rounded corners=4pt,
+    minimum width=12cm, minimum height=0.72cm,
+    align=center, font=\sffamily\small, text=inkK, inner sep=5pt},
+  WTrig/.style={draw=cAmber, fill=lAmber, rounded corners=5pt,
+    minimum width=12cm, minimum height=0.78cm,
+    align=center, font=\sffamily\small\bfseries, text=inkB,
+    inner sep=5pt},
+  WGood/.style={draw=cOk, fill=lOk, rounded corners=4pt,
+    minimum width=12cm, minimum height=0.72cm,
+    align=center, font=\sffamily\small\bfseries, text=cOk,
+    inner sep=5pt},
+  WTeal/.style={draw=cTeal, fill=lTeal, rounded corners=4pt,
+    minimum width=12cm, minimum height=0.68cm,
+    align=center, font=\sffamily\small\bfseries, text=cTeal,
+    inner sep=5pt},
+  WAmberH/.style={draw=cAmber, fill=lAmber, rounded corners=4pt,
+    minimum width=12cm, minimum height=0.68cm,
+    align=center, font=\sffamily\small\bfseries, text=cAmber,
+    inner sep=5pt},
+  %% ── narrow flow (request flow) ───────────────────────────────
+  NFlow/.style={draw=creamRl, fill=creamDk, rounded corners=4pt,
+    minimum width=6.4cm, minimum height=0.68cm,
+    align=center, font=\sffamily\tiny, text=inkK, inner sep=4pt},
+  NTrig/.style={draw=cAmber, fill=lAmber, rounded corners=4pt,
+    minimum width=6.4cm, minimum height=0.72cm,
+    align=center, font=\sffamily\tiny\bfseries, text=inkB,
+    inner sep=4pt},
+  NGood/.style={draw=cOk, fill=lOk, rounded corners=4pt,
+    minimum width=6.4cm, minimum height=0.68cm,
+    align=center, font=\sffamily\tiny\bfseries, text=cOk,
+    inner sep=4pt},
+  %% ── summary cards ────────────────────────────────────────────
+  CAmber/.style={draw=cAmber, fill=lAmber, rounded corners=4pt,
+    minimum width=6.6cm, minimum height=0.75cm,
+    align=left, inner xsep=7pt, font=\sffamily\small, text=inkK},
+  CTeal/.style={draw=cTeal, fill=lTeal, rounded corners=4pt,
+    minimum width=6.6cm, minimum height=0.75cm,
+    align=left, inner xsep=7pt, font=\sffamily\small, text=inkK},
+  CSage/.style={draw=cSage, fill=lSage, rounded corners=4pt,
+    minimum width=6.6cm, minimum height=0.75cm,
+    align=left, inner xsep=7pt, font=\sffamily\small, text=inkK},
+  CRust/.style={draw=cRust, fill=lRust, rounded corners=4pt,
+    minimum width=6.6cm, minimum height=0.75cm,
+    align=left, inner xsep=7pt, font=\sffamily\small, text=inkK},
+  CInd/.style={draw=cInd, fill=lInd, rounded corners=4pt,
+    minimum width=6.6cm, minimum height=0.75cm,
+    align=left, inner xsep=7pt, font=\sffamily\small, text=inkK},
+  %% ── arrows ───────────────────────────────────────────────────
+  AR/.style={-{Stealth[length=7pt,width=5pt]},
+             line width=1.8pt, color=cAmber},
+  AT/.style={-{Stealth[length=6pt,width=4pt]},
+             line width=1.4pt, color=cTeal},
+  AD/.style={-{Stealth[length=5pt]}, dashed,
+             line width=0.8pt, color=inkM},
 }
 
-%%============================================================================
+%%─────────────────────────────────────────────────────────────────
+%%  HELPERS
+%%─────────────────────────────────────────────────────────────────
+\newcommand{\CM}{\textcolor{cOk}{\ding{51}}\ }
+
+%% Pill tag — safe, no # inside tikz node style
+\newcommand{\pill}[2]{%
+  \begin{tikzpicture}[baseline=-2pt]
+    \node[draw=#1, fill=#1!15, rounded corners=3pt,
+          inner xsep=5pt, inner ysep=2pt,
+          font=\sffamily\tiny\bfseries, text=#1]{#2};
+  \end{tikzpicture}%
+}
+
+%% Coloured vertical rule bullet
+\newcommand{\VR}[1]{\textcolor{#1}{\rule{3pt}{9pt}}\ }
+
+%%═════════════════════════════════════════════════════════════════
 \begin{document}
-%%============================================================================
+%%═════════════════════════════════════════════════════════════════
 
-%%────────────────────────────────────────────────────────────────────────────
-%%  TITLE PAGE
-%%────────────────────────────────────────────────────────────────────────────
-\begin{titlepage}
-  \pagecolor{paperBg}
-  \begin{tikzpicture}[remember picture, overlay]
-    %% Left accent column
-    \fill[accentBlue]
-      (current page.north west) rectangle
-      ([xshift=0.80cm]current page.south west);
-    %% Inner lighter stripe
-    \fill[accentBlueLight!60]
-      ([xshift=0.80cm]current page.north west) rectangle
-      ([xshift=0.96cm]current page.south west);
-    %% Top band
-    \fill[paperDark]
-      (current page.north west) rectangle
-      ([yshift=-2.6cm]current page.north east);
-    %% Top band rule
-    \fill[accentBlue!40]
-      ([yshift=-2.6cm]current page.north west) rectangle
-      ([yshift=-2.74cm]current page.north east);
-    %% Bottom band
-    \fill[paperDark]
-      (current page.south west) rectangle
-      ([yshift=1.8cm]current page.south east);
-    \fill[accentBlue!40]
-      ([yshift=1.8cm]current page.south west) rectangle
-      ([yshift=1.66cm]current page.south east);
-    %% Top-right corner quarter-circles
-    \foreach \r in {0.7,1.4,2.1,2.8,3.5} {
-      \draw[ruleColor!60, line width=0.6pt]
-        (current page.north east) ++(-\r cm, 0) arc(90:180:\r cm);
-    }
-    %% Bottom-left decorative dot grid
-    \foreach \x in {0.3,0.65,1.0} {
-      \foreach \y in {0.3,0.65,1.0} {
-        \fill[accentBlue!25]
-          ([xshift=\x cm+1.1cm, yshift=\y cm]current page.south west) circle(1.5pt);
-      }
-    }
+%%─────────────────────────────────────────────────────────────────
+%%  SLIDE 1 — TITLE
+%%─────────────────────────────────────────────────────────────────
+{%
+\setbeamertemplate{footline}{}
+\begin{frame}
+\begin{tikzpicture}[remember picture,overlay]
+  \fill[cAmber]
+    (current page.north west)
+    rectangle ([xshift=0.7cm]current page.south west);
+  \fill[lAmber]
+    ([xshift=0.7cm]current page.north west)
+    rectangle ([xshift=0.85cm]current page.south west);
+  \fill[creamDk]
+    (current page.north west)
+    rectangle ([yshift=-1.8cm]current page.north east);
+  \fill[creamRl]
+    ([yshift=-1.8cm]current page.north west)
+    rectangle ([yshift=-1.92cm]current page.north east);
+  \fill[creamDk]
+    (current page.south west)
+    rectangle ([yshift=1.2cm]current page.south east);
+  \fill[creamRl]
+    ([yshift=1.2cm]current page.south west)
+    rectangle ([yshift=1.08cm]current page.south east);
+  \foreach \R in {0.5,1.0,1.5,2.0,2.5}{
+    \draw[creamRl,line width=0.5pt]
+      (current page.north east) ++(-\R cm,0) arc(90:180:\R cm);
+  }
+\end{tikzpicture}
+
+\vspace{0.5cm}
+\hspace{0.9cm}%
+\begin{minipage}{0.88\textwidth}
+  {\sffamily\tiny\color{cTeal}\MakeUppercase{Technical Presentation}}
+
+  \vspace{0.35cm}
+  {\sffamily\fontsize{30}{36}\selectfont\bfseries\color{inkB}
+    Project Architecture}\\[4pt]
+  {\sffamily\fontsize{17}{22}\selectfont\color{cTeal}
+    \& Automated Deployment Flow}
+
+  \vspace{0.35cm}
+  {\color{creamRl}\rule{9cm}{1.2pt}}
+  \vspace{0.3cm}
+
+  {\small\color{inkM}
+    High-level walkthrough of the mono-repo stack,\\
+    service architecture, and CI/CD pipeline.}
+
+  \vspace{0.5cm}
+  \pill{cTeal}{Node.js}\
+  \pill{cAmber}{React}\
+  \pill{cSage}{PostgreSQL}\
+  \pill{cRust}{Docker}\
+  \pill{cInd}{GitHub Actions}\
+  \pill{cTeal}{Nginx}\
+  \pill{cAmber}{OCI}
+
+  \vspace{0.6cm}
+  \begin{tikzpicture}[node distance=0.85cm and 1.2cm]
+    \node[NAmber] (ng) {\textbf{Nginx}\\\tiny :80 public};
+    \node[NSage, right=1.2cm of ng] (be)
+      {\textbf{Express API}\\\tiny :5000};
+    \node[NTeal, above=0.75cm of be] (fe)
+      {\textbf{React SPA}\\\tiny :3000};
+    \node[NRust, right=1.2cm of be] (db)
+      {\textbf{PostgreSQL}\\\tiny :5432};
+    \draw[AR] (ng) -- (be)
+      node[midway,below,font=\tiny\itshape,text=inkM]{/api/};
+    \draw[AR] (ng.north) |- (fe.west)
+      node[near end,above,font=\tiny\itshape,text=inkM]{/};
+    \draw[AR] (be) -- (db)
+      node[midway,below,font=\tiny\itshape,text=inkM]{SQL};
+    \begin{scope}[on background layer]
+      \node[draw=cTeal!20,fill=cTeal!4,rounded corners=7pt,
+            fit=(fe)(be)(db)(ng),inner sep=7pt]{};
+    \end{scope}
   \end{tikzpicture}
-
-  \vspace*{3.4cm}
-  \hspace*{1.2cm}
-  \begin{minipage}{0.86\textwidth}
-
-    {\sffamily\fontsize{8.5}{11}\selectfont
-     \textcolor{accentCyan}{\MakeUppercase{Technical Reference Documentation}}}
-
-    \vspace{0.5cm}
-    {\sffamily\fontsize{36}{42}\selectfont\bfseries
-     \textcolor{inkNavy}{Project\\[4pt]Architecture}}
-
-    \vspace{0.2cm}
-    {\sffamily\fontsize{20}{26}\selectfont
-     \textcolor{accentBlue}{\&~Automated Deployment Flow}}
-
-    \vspace{0.55cm}
-    \textcolor{ruleColor}{\rule{11cm}{1.8pt}}
-
-    \vspace{0.5cm}
-    {\fontsize{10.5}{16}\selectfont\color{inkMed}
-     A complete guide to the mono-repo application structure,\\
-     CI/CD deployment pipeline, and everything from development\\
-     through to production.}
-
-    \vspace{1.6cm}
-
-    %% ── Mini architecture diagram ───────────────────────────────────────
-    \begin{tikzpicture}[
-      node distance=1.0cm and 1.4cm,
-      >=Stealth,
-      every node/.style={font=\small}
-    ]
-      %% Nodes
-      \node[orangeBox=2.6cm] (ng)
-        {\textbf{Nginx}\\\tiny :80 public};
-      \node[blueBox=2.6cm, right=1.4cm of ng] (be)
-        {\textbf{Express API}\\\tiny :5000 internal};
-      \node[cyanBox=2.6cm, above=0.9cm of be] (fe)
-        {\textbf{React SPA}\\\tiny :3000 internal};
-      \node[indigoBox=2.6cm, right=1.4cm of be] (db)
-        {\textbf{PostgreSQL}\\\tiny :5432 internal};
-
-      %% Arrows
-      \draw[fatarrow] (ng) -- (be)
-        node[midway, below, font=\tiny\itshape, text=inkMed] {/api/};
-      \draw[fatarrow] (ng.north) |- (fe.west)
-        node[near end, above, font=\tiny\itshape, text=inkMed] {/};
-      \draw[fatarrow] (be) -- (db)
-        node[midway, below, font=\tiny\itshape, text=inkMed] {SQL};
-
-      %% Background network box
-      \begin{scope}[on background layer]
-        \node[
-          draw=accentBlue!20, fill=accentBlue!4,
-          rounded corners=8pt,
-          fit=(fe)(be)(db)(ng),
-          inner sep=10pt
-        ] {};
-      \end{scope}
-    \end{tikzpicture}
-
-    \vspace{1.2cm}
-    \textcolor{ruleColor}{\rule{11cm}{0.8pt}}
-    \vspace{0.4cm}
-
-    %% ── Metadata row ──────────────────────────────────────────────────
-    \begin{tabular}{@{}p{3.5cm}p{3.5cm}p{4cm}@{}}
-      {\tiny\sffamily\color{inkMed} STACK}                &
-      {\tiny\sffamily\color{inkMed} DEPLOYMENT}           &
-      {\tiny\sffamily\color{inkMed} INFRASTRUCTURE}       \\[2pt]
-      {\small\color{inkNavy} Node.js · React}             &
-      {\small\color{inkNavy} GitHub Actions}              &
-      {\small\color{inkNavy} OCI VM · OCIR}               \\
-      {\small\color{inkNavy} PostgreSQL · Nginx}          &
-      {\small\color{inkNavy} Docker Compose}              &
-      {\small\color{inkNavy} Docker · Docker Hub}         \\
-    \end{tabular}
-
-  \end{minipage}
-
-  \vfill
-  \hspace*{1.2cm}
-  {\small\color{inkMed} Internal Engineering Documentation\quad
-   \textcolor{ruleLight}{|}\quad
-   Mono-Repo Architecture\quad
-   \textcolor{ruleLight}{|}\quad
-   Production-Grade Setup}
-
-\end{titlepage}
-
-%%────────────────────────────────────────────────────────────────────────────
-%%  TABLE OF CONTENTS
-%%────────────────────────────────────────────────────────────────────────────
-\newpage
-\setcounter{tocdepth}{2}
-{
-  \hypersetup{linkcolor=inkMed}
-  \tableofcontents
+\end{minipage}
+\end{frame}
 }
-\newpage
 
-%%============================================================================
-\section{Project Overview}
-%%============================================================================
+%%─────────────────────────────────────────────────────────────────
+%%  SLIDE 2 — WHAT IS THIS PROJECT?
+%%─────────────────────────────────────────────────────────────────
+\begin{frame}{What Is This Project?}
+\vspace{0.1cm}
+\begin{columns}[T]
 
-This document describes a \textbf{production-grade, containerised full-stack
-application} consisting of four services orchestrated via a single
-\texttt{docker-compose.yml}. The mono-repo contains the backend, frontend, Nginx
-configuration, and the complete CI/CD pipeline definition.
+\column{0.52\textwidth}
+\begin{tikzpicture}
+  \node[draw=creamRl, fill=creamDk, rounded corners=7pt,
+        minimum width=7.5cm, minimum height=5.6cm,
+        inner sep=12pt, align=left] (card) {};
+  \node[anchor=north west, text width=6.8cm]
+    at ([xshift=3pt,yshift=-3pt]card.north west) {
+    \vspace{2pt}
+    {\sffamily\bfseries\color{inkB} A full-stack containerised web app}
+    \vspace{5pt}
 
-\begin{greenbox}
-Every \texttt{git push origin main} triggers a fully automated build, push,
-and deploy cycle. \textbf{Zero manual intervention is required} after the
-initial one-time VM setup.
-\end{greenbox}
+    \begin{itemize}[leftmargin=1.2em, itemsep=4pt]
+      \item \textbf{Backend} \textemdash\ Node.js + Express REST API
+      \item \textbf{Frontend} \textemdash\ React SPA built with Vite
+      \item \textbf{Database} \textemdash\ PostgreSQL, persistent storage
+      \item \textbf{Proxy} \textemdash\ Nginx, single public entry-point
+      \item \textbf{Packaging} \textemdash\ Docker containers throughout
+      \item \textbf{Delivery} \textemdash\ CI/CD via GitHub Actions
+    \end{itemize}
 
-\subsection{Project Structure}
+    \vspace{7pt}
+    {\small\color{inkM}
+      All four services live in one \textbf{mono-repo},\\
+      wired by a single \texttt{docker-compose.yml}.}
+  };
+\end{tikzpicture}
 
-\begin{lstlisting}[language=bash, caption={Mono-repo directory layout}]
-/root
-  docker-compose.yml         # 4-service orchestration
-  .env.example               # Environment variable template
-  .gitignore
+\column{0.46\textwidth}
+\vspace{0.2cm}
+{\sffamily\small\bfseries\color{cTeal} Guiding principles}
+\vspace{5pt}
 
-  backend/
-    index.js                 # Express server entry point
-    Dockerfile
-    config/db.js             # Connection pool
-    migrations/              # node-pg-migrate files
-    routes/user.routes.js
+\begin{tikzpicture}
+  \node[CAmber]
+    {\VR{cAmber}\textbf{One command} \textemdash\ just \texttt{git push}};
+\end{tikzpicture}
+\vspace{3pt}
 
-  frontend/
-    src/                     # React source
-    vite.config.js
-    Dockerfile
+\begin{tikzpicture}
+  \node[CTeal]
+    {\VR{cTeal}\textbf{Zero manual steps} \textemdash\ pipeline does it all};
+\end{tikzpicture}
+\vspace{3pt}
 
-  nginx/
-    nginx.conf               # Reverse proxy rules
-    Dockerfile
+\begin{tikzpicture}
+  \node[CSage]
+    {\VR{cSage}\textbf{Data safe} \textemdash\ pgdata volume persists};
+\end{tikzpicture}
+\vspace{3pt}
 
-  .github/
-    workflows/deploy.yml     # GitHub Actions CI/CD pipeline
-\end{lstlisting}
+\begin{tikzpicture}
+  \node[CRust]
+    {\VR{cRust}\textbf{One public port} \textemdash\ only Nginx exposed};
+\end{tikzpicture}
 
-%%============================================================================
-\section{Technology Stack}
-%%============================================================================
+\end{columns}
+\end{frame}
 
-\subsection{Back-end}
-
-\begin{center}
-\renewcommand{\arraystretch}{1.35}
-\begin{tabularx}{0.94\textwidth}{>{\bfseries\small}p{3.8cm} >{\small}p{2.2cm} X}
-  \toprule
-  \rowcolor{paperMid}
-  Component & Version & Purpose \\
-  \midrule
-  Node.js           & 22 Alpine & Runtime environment \\
-  \rowcolor{paperStripe}
-  Express.js        & 5.x       & HTTP framework \\
-  pg                & 8.x       & PostgreSQL driver \\
-  \rowcolor{paperStripe}
-  node-pg-migrate   & 8.x       & Database schema versioning \\
-  CORS              & 2.8.x     & Cross-origin resource sharing \\
-  \rowcolor{paperStripe}
-  dotenv            & 17.4.x    & Environment variable loading \\
-  nodemon           & 3.1.x     & Dev server auto-reload \\
-  \bottomrule
-\end{tabularx}
-\end{center}
-
-\subsection{Front-end}
-
-\begin{center}
-\renewcommand{\arraystretch}{1.35}
-\begin{tabularx}{0.94\textwidth}{>{\bfseries\small}p{3.8cm} >{\small}p{2.2cm} X}
-  \toprule
-  \rowcolor{paperMid}
-  Component & Version & Purpose \\
-  \midrule
-  React  & 18.x & UI component library \\
-  \rowcolor{paperStripe}
-  Vite   & 5.x  & Build tool \& development server \\
-  serve  & 14.x & Production static file server \\
-  \bottomrule
-\end{tabularx}
-\end{center}
-
-\subsection{Database \& DevOps}
-
-\begin{center}
-\renewcommand{\arraystretch}{1.35}
-\begin{tabularx}{0.94\textwidth}{>{\bfseries\small}p{3.8cm} >{\small}p{2.2cm} X}
-  \toprule
-  \rowcolor{paperMid}
-  Component & Version & Details \\
-  \midrule
-  PostgreSQL      & 16 Alpine & Primary data store, persistent volume \\
-  \rowcolor{paperStripe}
-  Docker Compose  & V2+       & Multi-container orchestration \\
-  Nginx           & Alpine    & Reverse proxy, SSL termination ready \\
-  \rowcolor{paperStripe}
-  GitHub Actions  & Native    & CI/CD pipeline automation \\
-  OCIR            & Native    & Container image registry \\
-  \bottomrule
-\end{tabularx}
-\end{center}
-
-%%============================================================================
-\section{Service Architecture}
-%%============================================================================
-
-\subsection{High-Level Service Topology}
-
-\begin{figure}[H]
+%%─────────────────────────────────────────────────────────────────
+%%  SLIDE 3 — SERVICE ARCHITECTURE
+%%─────────────────────────────────────────────────────────────────
+\begin{frame}{Service Architecture}
+\framesubtitle{Four services \textemdash\ one Docker network \textemdash\ one public port}
+\vspace{0.05cm}
 \centering
-\begin{tikzpicture}[
-  node distance=1.6cm and 2.4cm,
-  >=Stealth,
-  every node/.style={font=\small}
-]
+\begin{tikzpicture}[node distance=0.9cm and 1.9cm,
+                    every node/.style={font=\small}]
 
-  %% ── Internet ────────────────────────────────────────────────────────
-  \node[
-    draw=inkMed!35, fill=nodeGray,
-    rounded corners=6pt,
-    minimum width=12.5cm, minimum height=1.0cm,
-    align=center, font=\sffamily\small\bfseries, text=inkMed
-  ] (internet) at (0,0)
-  {$\oplus$ \ Internet Users
-   \quad\footnotesize\texttt{http://your-server-ip:80}};
+  \node[NGray, minimum width=11.2cm, minimum height=0.82cm] (net) at (0,0)
+    {{\sffamily\bfseries\color{inkM} Internet}\quad
+     \footnotesize\texttt{http://your-server:80}};
 
-  %% ── Nginx ───────────────────────────────────────────────────────────
-  \node[
-    draw=accentOrange, fill=nodeOrange,
-    rounded corners=6pt,
-    minimum width=9.5cm, minimum height=1.2cm,
-    align=center, font=\sffamily\small\bfseries, text=accentOrange,
-    below=1.4cm of internet,
-    drop shadow={shadow blur steps=6, shadow xshift=2pt,
-                 shadow yshift=-2pt, fill=accentOrange!20}
-  ] (nginx)
-  {\textbf{Nginx — Port 80}
-   \quad\footnotesize sole public entry-point\\[-1pt]
-   \footnotesize\texttt{location /}\ $\to$ frontend:3000
-   \quad\texttt{location /api/}\ $\to$ backend:5000};
+  \node[NAmber, minimum width=9.2cm, minimum height=1.05cm,
+        below=0.85cm of net] (nginx)
+    {\textbf{Nginx \textemdash\ Port 80}\qquad
+     \footnotesize\texttt{/}$\to$frontend\quad
+     \texttt{/api/}$\to$backend};
 
-  %% ── Docker network boundary ─────────────────────────────────────────
-  %% (drawn after inner nodes so it is placed on background layer)
+  \node[NTeal, below left=1.1cm and 2.6cm of nginx] (fe)
+    {\textbf{Frontend}\\[1pt]\tiny React SPA $\cdot$ :3000};
 
-  %% ── Frontend ────────────────────────────────────────────────────────
-  \node[cyanBox=4.0cm, below left=1.6cm and 2.8cm of nginx] (fe)
-  {\textbf{Frontend}\\[1pt]
-   \footnotesize React SPA\\
-   \footnotesize Port 3000};
+  \node[NSage, below right=1.1cm and 2.6cm of nginx] (be)
+    {\textbf{Backend}\\[1pt]\tiny Express API $\cdot$ :5000};
 
-  %% ── Backend ─────────────────────────────────────────────────────────
-  \node[blueBox=4.0cm, below right=1.6cm and 2.8cm of nginx] (be)
-  {\textbf{Backend}\\[1pt]
-   \footnotesize Express API\\
-   \footnotesize Port 5000};
+  \node[NRust, below=0.95cm of be] (pg)
+    {\textbf{PostgreSQL}\\[1pt]\tiny :5432 internal};
 
-  %% ── PostgreSQL ──────────────────────────────────────────────────────
-  \node[indigoBox=4.0cm, below=1.5cm of be] (pg)
-  {\textbf{PostgreSQL}\\[1pt]
-   \footnotesize Primary data store\\
-   \footnotesize Port 5432 — internal};
+  \node[draw=cRust!35, fill=lRust!50, rounded corners=3pt, dashed,
+        minimum width=1.9cm, minimum height=0.65cm,
+        align=center, font=\tiny\itshape, text=cRust,
+        right=0.85cm of pg] (vol)
+    {\texttt{pgdata}\\volume};
 
-  %% ── pgdata volume ───────────────────────────────────────────────────
-  \node[
-    draw=accentIndigo!40, fill=accentIndigoLight!50,
-    rounded corners=4pt, dashed,
-    minimum width=3.2cm, minimum height=0.8cm,
-    align=center, font=\tiny\itshape, text=accentIndigo,
-    right=1.0cm of pg
-  ] (vol) {\texttt{pgdata}\\persistent volume};
+  \draw[AR] (net) -- (nginx)
+    node[midway,right=3pt,font=\tiny\itshape,text=inkM]{HTTP};
+  \draw[AR] ([xshift=-2.1cm]nginx.south) -- (fe.north)
+    node[midway,left=2pt,font=\tiny\itshape,text=inkM]
+    {\texttt{location /}};
+  \draw[AR] ([xshift=2.1cm]nginx.south) -- (be.north)
+    node[midway,right=2pt,font=\tiny\itshape,text=inkM]
+    {\texttt{location /api/}};
+  \draw[AR] (be) -- (pg)
+    node[midway,right=3pt,font=\tiny\itshape,text=inkM]{pg driver};
+  \draw[AD] (pg.east) -- (vol.west);
 
-  %% ── Arrows ──────────────────────────────────────────────────────────
-  \draw[fatarrow] (internet) -- (nginx)
-    node[midway, right=5pt, font=\tiny\itshape, text=inkMed] {HTTP :80};
-
-  \draw[fatarrow] (nginx.south) ++(-2.4cm,0) coordinate (nL) -- (fe.north)
-    node[midway, left=3pt, font=\tiny\itshape, text=inkMed] {\texttt{location /}};
-
-  \draw[fatarrow] (nginx.south) ++(2.4cm,0) coordinate (nR) -- (be.north)
-    node[midway, right=3pt, font=\tiny\itshape, text=inkMed] {\texttt{location /api/}};
-
-  \draw[fatarrow] (be) -- (pg)
-    node[midway, right=4pt, font=\tiny\itshape, text=inkMed] {pg driver};
-
-  \draw[dashedarrow] (pg.east) -- (vol.west)
-    node[midway, below=2pt, font=\tiny\itshape, text=inkMed] {mount};
-
-  %% ── Docker network label ────────────────────────────────────────────
   \begin{scope}[on background layer]
-    \node[
-      draw=accentBlue!25, fill=accentBlue!4,
-      rounded corners=10pt,
-      fit=(fe)(be)(pg)(vol)(nginx),
-      inner sep=16pt,
-      label={[font=\tiny\sffamily\itshape, text=accentBlue]
-             below:Docker Internal Network \texttt{crudapp\_default}}
-    ] {};
+    \node[draw=cTeal!20, fill=cTeal!4, rounded corners=9pt,
+          fit=(fe)(be)(pg)(vol)(nginx), inner sep=11pt,
+          label={[font=\tiny\sffamily\itshape,
+                  text=cTeal]below:Docker Internal Network}]
+    {};
   \end{scope}
-
 \end{tikzpicture}
-\caption{High-level service topology. Only Nginx exposes a public port.
-         All inter-service communication uses Docker's internal DNS.}
-\end{figure}
+\end{frame}
 
-%%────────────────────────────────────────────────────────────────────────────
-\subsection{Service Dependencies \& Start Order}
+%%─────────────────────────────────────────────────────────────────
+%%  SLIDE 4 — TECH STACK
+%%─────────────────────────────────────────────────────────────────
+\begin{frame}{Tech Stack at a Glance}
+\vspace{0.2cm}
+\begin{columns}[T]
 
-Docker Compose enforces a strict startup order via \texttt{depends\_on} with
-\texttt{condition: service\_healthy}.
+\column{0.24\textwidth}
+\begin{tikzpicture}
+  \node[draw=cTeal, fill=lTeal, rounded corners=6pt,
+        minimum width=3.5cm, inner sep=9pt, align=left] {
+    {\sffamily\small\bfseries\color{cTeal} Backend}
+    \vspace{3pt}
 
-\begin{figure}[H]
+    {\tiny\color{inkB}
+      \textbf{Node.js} 22 Alpine\\[2pt]
+      \textbf{Express} 5.x\\[2pt]
+      \textbf{pg} driver 8.x\\[2pt]
+      node-pg-migrate\\[2pt]
+      dotenv $\cdot$ cors}
+  };
+\end{tikzpicture}
+
+\column{0.24\textwidth}
+\begin{tikzpicture}
+  \node[draw=cAmber, fill=lAmber, rounded corners=6pt,
+        minimum width=3.5cm, inner sep=9pt, align=left] {
+    {\sffamily\small\bfseries\color{cAmber} Frontend}
+    \vspace{3pt}
+
+    {\tiny\color{inkB}
+      \textbf{React} 18.x\\[2pt]
+      \textbf{Vite} 5.x\\[2pt]
+      \textbf{serve} 14.x\\[2pt]
+      \phantom{x}\\[2pt]
+      \phantom{x}}
+  };
+\end{tikzpicture}
+
+\column{0.24\textwidth}
+\begin{tikzpicture}
+  \node[draw=cSage, fill=lSage, rounded corners=6pt,
+        minimum width=3.5cm, inner sep=9pt, align=left] {
+    {\sffamily\small\bfseries\color{cSage} Database}
+    \vspace{3pt}
+
+    {\tiny\color{inkB}
+      \textbf{PostgreSQL} 16\\[2pt]
+      Alpine image\\[2pt]
+      Persistent volume\\[2pt]
+      64 MB shared\_buf\\[2pt]
+      max 50 connections}
+  };
+\end{tikzpicture}
+
+\column{0.24\textwidth}
+\begin{tikzpicture}
+  \node[draw=cRust, fill=lRust, rounded corners=6pt,
+        minimum width=3.5cm, inner sep=9pt, align=left] {
+    {\sffamily\small\bfseries\color{cRust} DevOps}
+    \vspace{3pt}
+
+    {\tiny\color{inkB}
+      \textbf{Docker} + Compose V2\\[2pt]
+      \textbf{Nginx} Alpine\\[2pt]
+      \textbf{GitHub Actions}\\[2pt]
+      \textbf{OCIR} registry\\[2pt]
+      OCI VM cloud}
+  };
+\end{tikzpicture}
+
+\end{columns}
+
+\vspace{0.4cm}
 \centering
-\begin{tikzpicture}[
-  node distance=0.48cm,
-  >=Stealth,
-  every node/.style={font=\small}
-]
-  %% Numbered steps
-  \node[
-    draw=accentIndigo, fill=nodeIndigo,
-    rounded corners=5pt,
-    minimum width=12cm, minimum height=1.0cm,
-    align=center, font=\small, text=inkBlack,
-    drop shadow={shadow blur steps=4, shadow xshift=1pt,
-                 shadow yshift=-1pt, fill=accentIndigo!15}
-  ] (pg)
-  {\textbf{Step 1\ \ PostgreSQL}
-   \quad starts first
-   \quad health-checked via \texttt{pg\_isready} every 10 s
-   \quad 10 retries};
+{\small\color{inkM}
+  Alpine images keep sizes lean:
+  Nginx $\approx$15 MB $\cdot$
+  Frontend $\approx$150 MB $\cdot$
+  Backend $\approx$180 MB}
+\end{frame}
 
-  \node[
-    draw=accentSlate, fill=nodeSlate,
-    rounded corners=5pt,
-    minimum width=12cm, minimum height=1.0cm,
-    align=center, font=\small, text=inkBlack,
-    below=0.46cm of pg,
-    drop shadow={shadow blur steps=4, shadow xshift=1pt,
-                 shadow yshift=-1pt, fill=accentSlate!15}
-  ] (be)
-  {\textbf{Step 2\ \ Backend}
-   \quad waits for PostgreSQL \textsc{healthy}
-   \quad runs \texttt{npm run migrate \&\& node index.js}};
-
-  \node[
-    draw=accentCyan, fill=nodeCyan,
-    rounded corners=5pt,
-    minimum width=12cm, minimum height=1.0cm,
-    align=center, font=\small, text=inkBlack,
-    below=0.46cm of be,
-    drop shadow={shadow blur steps=4, shadow xshift=1pt,
-                 shadow yshift=-1pt, fill=accentCyan!15}
-  ] (fe)
-  {\textbf{Step 3\ \ Frontend}
-   \quad starts in parallel (no upstream dependency)};
-
-  \node[flowOK=12cm, below=0.46cm of fe] (ng)
-  {\ding{51}\;
-   \textbf{Step 4\ \ Nginx}
-   \quad waits for backend \& frontend
-   \quad then opens :80 to the world};
-
-  \foreach \a/\b in {pg/be, be/fe, fe/ng}
-    \draw[fatarrow] (\a) -- (\b);
-
-  %% Right-side callouts
-  \node[font=\tiny\itshape, text=inkMed, anchor=west]
-    at ([xshift=0.3cm]pg.east)  {};
-  \node[font=\tiny\itshape, text=inkMed, anchor=west]
-    at ([xshift=0.3cm]be.east)  {};
-
-\end{tikzpicture}
-\caption{Enforced service start order and health-check dependency chain.}
-\end{figure}
-
-\subsection{Service Details}
-
-\subsubsection{PostgreSQL (Database)}
-\begin{itemize}[leftmargin=1.6em, itemsep=3pt]
-  \item \textbf{Port:} 5432 — internal only, never exposed externally
-  \item \textbf{Storage:} Persistent volume \texttt{pgdata:/var/lib/postgresql/data}
-  \item \textbf{Memory tuning:} \texttt{shared\_buffers=64MB},
-        \texttt{max\_connections=50}
-  \item \textbf{Health check:} \texttt{pg\_isready -U \$POSTGRES\_USER}
-        every 10 seconds
-\end{itemize}
-
-\subsubsection{Backend (Express API)}
-\begin{itemize}[leftmargin=1.6em, itemsep=3pt]
-  \item \textbf{Port:} 5000 — internal only
-  \item \textbf{Startup command:} \texttt{npm run migrate \&\& node index.js}
-  \item \textbf{Responsibilities:} run DB migrations on every start,
-        serve REST endpoints, authentication, connection-pool query execution
-\end{itemize}
-
-\subsubsection{Frontend (React SPA)}
-\begin{itemize}[leftmargin=1.6em, itemsep=3pt]
-  \item \textbf{Port:} 3000 — internal only
-  \item \textbf{Runtime:} Node.js 22 Alpine, served by the \texttt{serve} package
-  \item \textbf{Build:} Vite production build baked into the Docker image
-\end{itemize}
-
-\subsubsection{Nginx (Reverse Proxy)}
-\begin{itemize}[leftmargin=1.6em, itemsep=3pt]
-  \item \textbf{Port:} 80 — the \emph{only} publicly exposed port
-  \item \textbf{Routes:}
-        \texttt{/} $\to$ frontend:3000\quad
-        \texttt{/api/} $\to$ backend:5000\quad
-        \texttt{/health} $\to$ backend:5000
-  \item \textbf{DNS resolver:} \texttt{127.0.0.11:53} (Docker internal DNS)
-        for dynamic hostname resolution
-\end{itemize}
-
-%%============================================================================
-\section{Startup Sequence}
-%%============================================================================
-
-The complete chain of events triggered by \texttt{docker compose up -d}:
-
-\begin{figure}[H]
+%%─────────────────────────────────────────────────────────────────
+%%  SLIDE 5 — STARTUP SEQUENCE
+%%─────────────────────────────────────────────────────────────────
+\begin{frame}{Startup Sequence}
+\framesubtitle{\texttt{docker compose up -d} \textemdash\ what happens next}
+\vspace{0.1cm}
 \centering
-\begin{tikzpicture}[
-  node distance=0.40cm,
-  >=Stealth,
-  every node/.style={font=\small}
-]
-  %% Command node
-  \node[flowTrigger=11.5cm] (cmd)
-  {\texttt{\$ docker compose up -d}};
+\begin{tikzpicture}[node distance=0.30cm, every node/.style={font=\small}]
 
-  %% Read config
-  \node[flowStep=11.5cm, below=0.44cm of cmd] (read)
-  {Compose reads \texttt{.env} and \texttt{docker-compose.yml}
-   — all variables injected};
+  \node[Trig] (cmd)
+    {\texttt{\$ docker compose up -d}\quad
+     reads \texttt{.env} + \texttt{docker-compose.yml}};
 
-  %% ── Phase 1: PostgreSQL ───────────────────────────────────────────────
-  \node[
-    draw=accentIndigo!60, fill=nodeIndigo,
-    rounded corners=5pt,
-    minimum width=11.5cm, minimum height=0.95cm,
-    align=center, font=\small, text=inkBlack,
-    below=0.50cm of read,
-    drop shadow={shadow blur steps=4, shadow xshift=1pt,
-                 shadow yshift=-1pt, fill=accentIndigo!20}
-  ] (pg1)
-  {\textbf{Phase 1 ·} Start PostgreSQL
-   — mount \texttt{pgdata} volume, apply memory tuning flags};
+  \node[PhRust, below=0.28cm of cmd] (pg)
+    {\textbf{1.}\ PostgreSQL starts\quad
+     health-checked via \texttt{pg\_isready}\quad
+     10 retries $\times$ 10 s};
 
-  \node[
-    draw=ruleColor, fill=paperMid,
-    rounded corners=4pt,
-    minimum width=11.5cm, minimum height=0.85cm,
-    align=center, font=\small\itshape, text=inkMed,
-    below=0.32cm of pg1
-  ] (pgw)
-  {\texttt{pg\_isready} health-check loop\ \
-   $\cdot$\ 10 retries\ $\cdot$\ 10 s interval\ \
-   $\cdot$\ container stays \textsc{starting} until passed};
+  \node[PhSage, below=0.26cm of pg] (be)
+    {\textbf{2.}\ Backend waits for PostgreSQL \textsc{healthy}\quad
+     runs \texttt{npm run migrate}\quad starts Express};
 
-  \node[flowOK=11.5cm, below=0.32cm of pgw] (pgok)
-  {\cmark PostgreSQL \textsc{healthy}};
+  \node[PhTeal, below=0.26cm of be] (fe)
+    {\textbf{3.}\ Frontend starts in parallel\quad
+     serves Vite build via \texttt{serve} on :3000};
 
-  %% ── Phase 2: Backend ─────────────────────────────────────────────────
-  \node[
-    draw=accentSlate!70, fill=nodeSlate,
-    rounded corners=5pt,
-    minimum width=11.5cm, minimum height=0.95cm,
-    align=center, font=\small, text=inkBlack,
-    below=0.50cm of pgok,
-    drop shadow={shadow blur steps=4, shadow xshift=1pt,
-                 shadow yshift=-1pt, fill=accentSlate!20}
-  ] (be1)
-  {\textbf{Phase 2 ·} Start Backend
-   — \texttt{NODE\_ENV=production}, inject all six DB env vars};
+  \node[PhAmber, below=0.26cm of fe] (ng)
+    {\textbf{4.}\ Nginx waits for backend \& frontend\quad
+     opens port 80};
 
-  \node[flowStep=11.5cm, below=0.32cm of be1] (mig)
-  {\texttt{npm run migrate}
-   — node-pg-migrate scans \texttt{migrations/},
-   applies any files not yet in \texttt{pgmigrations}};
+  \node[Good, below=0.30cm of ng] (ok)
+    {\CM All services ready\quad
+     \texttt{http://your-ip:80}\quad
+     warm-up $\approx$30--60 s};
 
-  \node[flowOK=11.5cm, below=0.32cm of mig] (beok)
-  {\cmark Express server listening on :5000};
-
-  %% ── Phase 3: Frontend ────────────────────────────────────────────────
-  \node[
-    draw=accentCyan!70, fill=nodeCyan,
-    rounded corners=5pt,
-    minimum width=11.5cm, minimum height=0.95cm,
-    align=center, font=\small, text=inkBlack,
-    below=0.50cm of beok,
-    drop shadow={shadow blur steps=4, shadow xshift=1pt,
-                 shadow yshift=-1pt, fill=accentCyan!20}
-  ] (fe1)
-  {\textbf{Phase 3 ·} Start Frontend
-   — \texttt{serve} serves Vite production build on :3000};
-
-  \node[flowOK=11.5cm, below=0.32cm of fe1] (feok)
-  {\cmark React SPA ready on :3000};
-
-  %% ── Phase 4: Nginx ───────────────────────────────────────────────────
-  \node[
-    draw=accentOrange!70, fill=nodeOrange,
-    rounded corners=5pt,
-    minimum width=11.5cm, minimum height=0.95cm,
-    align=center, font=\small, text=inkBlack,
-    below=0.50cm of feok,
-    drop shadow={shadow blur steps=4, shadow xshift=1pt,
-                 shadow yshift=-1pt, fill=accentOrange!20}
-  ] (ng1)
-  {\textbf{Phase 4 ·} Start Nginx
-   — load \texttt{nginx.conf}, set Docker DNS resolver
-   \texttt{127.0.0.11:53}};
-
-  %% Final ready node
-  \node[
-    draw=successFg, fill=successBg,
-    rounded corners=6pt,
-    minimum width=11.5cm, minimum height=1.15cm,
-    align=center,
-    font=\sffamily\normalsize\bfseries, text=successFg,
-    below=0.50cm of ng1,
-    drop shadow={shadow blur steps=5, shadow xshift=1.5pt,
-                 shadow yshift=-1.5pt, fill=successFg!20}
-  ] (ready)
-  {\Large\ding{51}\;
-   ALL SERVICES READY
-   \quad\normalsize\texttt{http://your-ip:80}
-   \quad Total warm-up: $\approx$30--60 s};
-
-  %% Arrows
-  \foreach \a/\b in {cmd/read, read/pg1, pg1/pgw, pgw/pgok,
-                     pgok/be1, be1/mig, mig/beok,
-                     beok/fe1, fe1/feok,
-                     feok/ng1, ng1/ready}
-    \draw[fatarrow] (\a) -- (\b);
-
+  \draw[AR] (cmd) -- (pg);
+  \draw[AR] (pg)  -- (be);
+  \draw[AR] (be)  -- (fe);
+  \draw[AR] (fe)  -- (ng);
+  \draw[AR] (ng)  -- (ok);
 \end{tikzpicture}
-\caption{Complete startup sequence showing all four service phases
-         and their health-check gates.}
-\end{figure}
+\end{frame}
 
-%%============================================================================
-\section{Database Migration Strategy}
-%%============================================================================
+%%─────────────────────────────────────────────────────────────────
+%%  SLIDE 6 — DATABASE MIGRATIONS
+%%─────────────────────────────────────────────────────────────────
+\begin{frame}{Database Migrations}
+\framesubtitle{Schema changes are automatic \textemdash\ no manual SQL}
+\vspace{0.1cm}
+\begin{columns}[T]
 
-\subsection{End-to-End Migration Workflow}
+\column{0.47\textwidth}
+{\sffamily\small\bfseries\color{cTeal} How it works}
+\vspace{5pt}
 
-\begin{figure}[H]
-\centering
-\begin{tikzpicture}[
-  node distance=0.40cm,
-  >=Stealth,
-  every node/.style={font=\small}
-]
-  \node[
-    draw=accentCyan, fill=nodeCyan,
-    rounded corners=6pt,
-    minimum width=11.5cm, minimum height=1.05cm,
-    align=center, font=\sffamily\small\bfseries, text=accentCyan,
-    drop shadow={shadow blur steps=5, shadow xshift=1.5pt,
-                 shadow yshift=-1.5pt, fill=accentCyan!20}
-  ] (dev)
-  {Developer creates
-   \texttt{backend/migrations/002\_add\_posts\_table.js}};
+\begin{itemize}[leftmargin=1.2em, itemsep=4pt]
+  \item Files live in \texttt{backend/migrations/}
+  \item On every start, \textbf{node-pg-migrate} runs
+  \item Checks the \texttt{pgmigrations} table
+  \item Only \emph{new} files applied \textemdash\ idempotent
+  \item Express starts after migrate exits cleanly
+\end{itemize}
 
-  \node[flowStep=11.5cm, below=0.42cm of dev] (push)
-  {\texttt{git commit \&\& git push origin main}
-   — triggers GitHub Actions webhook};
+\vspace{9pt}
+{\sffamily\small\bfseries\color{cAmber} File naming}
+\vspace{4pt}
 
-  \node[flowBuild=11.5cm, below=0.36cm of push] (ga)
-  {GitHub Actions runner: rebuild all three Docker images
-   (migration file is baked into backend image)};
-
-  \node[flowBuild=11.5cm, below=0.32cm of ga] (ocir)
-  {Push updated images to OCIR registry
-   — only changed layers are uploaded};
-
-  \node[flowStep=11.5cm, below=0.36cm of ocir] (ssh)
-  {SSH to OCI VM
-   · \texttt{docker compose pull}
-   — fetch only the updated image layers};
-
-  \node[flowStep=11.5cm, below=0.32cm of ssh] (up)
-  {\texttt{docker compose up -d}
-   — recreate changed containers, preserve \texttt{pgdata} volume};
-
-  \node[
-    draw=accentOrange!70, fill=nodeOrange,
-    rounded corners=5pt,
-    minimum width=11.5cm, minimum height=1.0cm,
-    align=center, font=\small, text=inkBlack,
-    below=0.42cm of up,
-    drop shadow={shadow blur steps=4, shadow xshift=1pt,
-                 shadow yshift=-1pt, fill=accentOrange!15}
-  ] (check)
-  {\textbf{node-pg-migrate:}
-   scan \texttt{migrations/}
-   \ $\to$\ query \texttt{pgmigrations} table
-   \ $\to$\ identify unapplied files};
-
-  \node[flowStep=11.5cm, below=0.32cm of check] (apply)
-  {Apply only \emph{new} migrations in sequence
-   · record each with timestamp in \texttt{pgmigrations}};
-
-  \node[flowStep=11.5cm, below=0.32cm of apply] (srv)
-  {Migrate exits cleanly
-   · Express server starts and accepts requests};
-
-  \node[flowOK=11.5cm, below=0.42cm of srv] (done)
-  {\cmark Schema updated
-   · server live
-   · zero data loss
-   · fully idempotent};
-
-  \foreach \a/\b in {dev/push, push/ga, ga/ocir, ocir/ssh, ssh/up,
-                     up/check, check/apply, apply/srv, srv/done}
-    \draw[fatarrow] (\a) -- (\b);
-
+\begin{tikzpicture}
+  \node[draw=creamRl, fill=creamDk, rounded corners=4pt,
+        minimum width=6.4cm, inner sep=8pt,
+        font=\ttfamily\small, text=inkB, align=left] {
+    001\_create\_users.js\\
+    002\_add\_posts\_table.js\\
+    003\_add\_indexes.js
+  };
 \end{tikzpicture}
-\caption{Full migration flow — from developer commit to live schema update.}
-\end{figure}
 
-\subsection{Migration File Format}
+\column{0.51\textwidth}
+{\sffamily\small\bfseries\color{cSage} Migration file}
+\vspace{4pt}
 
-\begin{lstlisting}[language=JavaScript,
-  caption={\texttt{backend/migrations/001\_create\_users.js}}]
+\begin{lstlisting}
 exports.up = pgm => {
   pgm.createTable('users', {
-    id:         { type: 'serial',       primaryKey: true },
-    name:       { type: 'varchar(255)', notNull: true },
-    email:      { type: 'varchar(255)', notNull: true, unique: true },
-    password:   { type: 'varchar(255)', notNull: true },
-    created_at: { type: 'timestamp',    default: pgm.func('NOW()') },
-    updated_at: { type: 'timestamp',    default: pgm.func('NOW()') },
+    id: {
+      type: 'serial',
+      primaryKey: true
+    },
+    name: {
+      type: 'varchar(255)',
+      notNull: true
+    },
+    email: {
+      type: 'varchar(255)',
+      unique: true
+    },
   });
 };
 
-exports.down = pgm => pgm.dropTable('users');
+exports.down = pgm =>
+  pgm.dropTable('users');
 \end{lstlisting}
 
-\subsection{Migration Tracking — \texttt{pgmigrations} Table}
-
-\begin{center}
-\renewcommand{\arraystretch}{1.4}
-\begin{tabularx}{0.84\textwidth}{>{\small}c >{\ttfamily\small}l l}
-  \toprule
-  \rowcolor{paperMid} id & name & run\_on \\
-  \midrule
-  1 & 001\_create\_users       & 2025-05-01 10:30:15 UTC \\
-  \rowcolor{paperStripe}
-  2 & 002\_add\_posts\_table   & 2025-05-02 14:22:08 UTC \\
-  \bottomrule
-\end{tabularx}
-\end{center}
-
-\begin{notebox}
-\textbf{Idempotency:} Running \texttt{npm run migrate} twice never duplicates
-changes. node-pg-migrate skips any file already recorded in
-\texttt{pgmigrations}.
-\end{notebox}
-
-%%============================================================================
-\section{CI/CD Pipeline}
-%%============================================================================
-
-The pipeline lives in \texttt{.github/workflows/deploy.yml} and fires on every
-push to the \texttt{main} branch. It has two phases: \textbf{Build} (on GitHub's
-hosted runner) and \textbf{Deploy} (on the OCI VM over SSH).
-
-\clearpage
-\subsection{Build Phase — GitHub Actions Runner}
-
-\begin{figure}[H]
-\centering
-\begin{tikzpicture}[
-  node distance=0.38cm,
-  >=Stealth,
-  every node/.style={font=\small}
-]
-  \node[flowTrigger=12.5cm] (trig)
-  {\texttt{git push origin main}
-   — GitHub webhook fires
-   · \texttt{ubuntu-latest} runner provisioned};
-
-  \node[flowStep=12.5cm, below=0.42cm of trig] (co)
-  {\textbf{Step 1 ·} Checkout repository at \texttt{HEAD} of \texttt{main}};
-
-  \node[flowStep=12.5cm, below=0.36cm of co] (login)
-  {\textbf{Step 2 ·}
-   \texttt{docker login bom.ocir.io}
-   using \texttt{OCIR\_USERNAME} / \texttt{OCIR\_TOKEN} secrets};
-
-  %% Backend
-  \node[flowBuild=12.5cm, below=0.44cm of login] (beb)
-  {\textbf{Step 3a ·} Build backend image:
-   \texttt{FROM node:22-alpine}
-   · \texttt{npm ci -{}-omit=dev}
-   · bake in \texttt{migrations/}
-   · $\approx$180 MB};
-
-  \node[flowOK=12.5cm, below=0.30cm of beb] (bep)
-  {\cmark Push \texttt{bom.ocir.io/namespace/crudapp/backend:latest}};
-
-  %% Frontend
-  \node[flowBuild=12.5cm, below=0.44cm of bep] (feb)
-  {\textbf{Step 4a ·} Build frontend:
-   Stage~1 Vite production build
-   · Stage~2 \texttt{serve} package
-   · $\approx$150 MB};
-
-  \node[flowOK=12.5cm, below=0.30cm of feb] (fep)
-  {\cmark Push \texttt{bom.ocir.io/namespace/crudapp/frontend:latest}};
-
-  %% Nginx
-  \node[flowBuild=12.5cm, below=0.44cm of fep] (ngb)
-  {\textbf{Step 5a ·} Build nginx image:
-   \texttt{FROM nginx:alpine}
-   · copy custom \texttt{nginx.conf}
-   · $\approx$15 MB};
-
-  \node[flowOK=12.5cm, below=0.30cm of ngb] (ngp)
-  {\cmark Push \texttt{bom.ocir.io/namespace/crudapp/nginx:latest}};
-
-  \foreach \a/\b in {trig/co, co/login, login/beb, beb/bep,
-                     bep/feb, feb/fep, fep/ngb, ngb/ngp}
-    \draw[fatarrow] (\a) -- (\b);
-
+\vspace{4pt}
+\begin{tikzpicture}
+  \node[draw=cOk, fill=lOk, rounded corners=4pt,
+        minimum width=6.4cm, inner sep=6pt,
+        font=\sffamily\small, text=inkK, align=left] {
+    \CM Applied once, tracked forever\\
+    \CM Safe to run on every deploy
+  };
 \end{tikzpicture}
-\caption{Build Phase: three images compiled on the GitHub runner and pushed to OCIR.}
-\end{figure}
 
-\subsection{Deploy Phase — OCI Virtual Machine}
+\end{columns}
+\end{frame}
 
-\begin{figure}[H]
+%%─────────────────────────────────────────────────────────────────
+%%  SLIDE 7 — CI/CD PIPELINE
+%%─────────────────────────────────────────────────────────────────
+\begin{frame}{CI/CD Pipeline}
+\framesubtitle{\texttt{git push main} $\to$ live in production \textemdash\ fully automated}
+\vspace{0.05cm}
 \centering
-\begin{tikzpicture}[
-  node distance=0.40cm,
-  >=Stealth,
-  every node/.style={font=\small}
-]
-  \node[
-    draw=accentCyan, fill=nodeCyan,
-    rounded corners=6pt,
-    minimum width=12.5cm, minimum height=1.05cm,
-    align=center, font=\sffamily\small\bfseries, text=accentCyan,
-    drop shadow={shadow blur steps=5, shadow xshift=1.5pt,
-                 shadow yshift=-1.5pt, fill=accentCyan!20}
-  ] (ssh)
-  {\textbf{Step 6 ·}
-   SSH to OCI VM using \texttt{OCI\_SSH\_PRIVATE\_KEY} GitHub Secret};
+\begin{tikzpicture}[node distance=0.27cm, every node/.style={font=\small}]
 
-  \node[flowStep=12.5cm, below=0.42cm of ssh] (pull)
-  {\textbf{Step 7 ·}
-   \texttt{docker compose pull}
-   — download updated images (only changed layers transferred)};
+  \node[WTrig] (push)
+    {\texttt{git push origin main}\quad
+     GitHub webhook fires\quad \texttt{ubuntu-latest} runner};
 
-  \node[flowStep=12.5cm, below=0.36cm of pull] (up)
-  {\textbf{Step 8 ·}
-   \texttt{docker compose up -d}
-   — stop old containers, start new ones, preserve \texttt{pgdata} volume};
+  \node[WTeal, below=0.25cm of push] (blbl)
+    {BUILD PHASE \textemdash\ GitHub Actions Runner};
 
-  \node[flowStep=12.5cm, below=0.36cm of up] (hc)
-  {\textbf{Step 9 ·}
-   Health checks pass
-   · backend migrations run automatically on container start};
+  \node[WFlow, below=0.22cm of blbl] (b1)
+    {Build \textbf{backend} image\quad
+     Build \textbf{frontend} image\quad
+     Build \textbf{nginx} image};
 
-  \node[
-    draw=successFg, fill=successBg,
-    rounded corners=6pt,
-    minimum width=12.5cm, minimum height=1.2cm,
-    align=center,
-    font=\sffamily\normalsize\bfseries, text=successFg,
-    below=0.46cm of hc,
-    drop shadow={shadow blur steps=5, shadow xshift=1.5pt,
-                 shadow yshift=-1.5pt, fill=successFg!20}
-  ] (done)
-  {\Large\ding{51}\; DEPLOYMENT COMPLETE
-   \quad\normalsize\texttt{http://your.vm.public.ip}
-   \quad Total time: $\approx$7--10 min
-   · Downtime: $\approx$30 s};
+  \node[WFlow, below=0.20cm of b1] (b2)
+    {Push all three images to \textbf{OCIR}
+     (Oracle Container Image Registry)};
 
-  \foreach \a/\b in {ssh/pull, pull/up, up/hc, hc/done}
-    \draw[fatarrow] (\a) -- (\b);
+  \node[WAmberH, below=0.27cm of b2] (dlbl)
+    {DEPLOY PHASE \textemdash\ OCI Virtual Machine via SSH};
 
+  \node[WFlow, below=0.22cm of dlbl] (d1)
+    {SSH into OCI VM\quad
+     \texttt{docker compose pull} \textemdash\ fetch latest images};
+
+  \node[WFlow, below=0.20cm of d1] (d2)
+    {\texttt{docker compose up -d} \textemdash\
+     recreate containers, run migrations, preserve \texttt{pgdata}};
+
+  \node[WGood, below=0.27cm of d2] (ok)
+    {\CM App live at \texttt{http://your.vm.ip}\quad
+     Total: $\approx$7--10 min\quad Downtime: $\approx$30 s};
+
+  \draw[AR] (push) -- (blbl);
+  \draw[AR] (blbl) -- (b1);
+  \draw[AR] (b1)   -- (b2);
+  \draw[AR] (b2)   -- (dlbl);
+  \draw[AR] (dlbl) -- (d1);
+  \draw[AR] (d1)   -- (d2);
+  \draw[AR] (d2)   -- (ok);
 \end{tikzpicture}
-\caption{Deploy Phase: images pulled, containers restarted, migrations applied automatically.}
-\end{figure}
+\end{frame}
 
-\subsection{Rollback Strategy}
-
-\begin{notebox}
-If a deployment breaks production, previous images remain in OCIR.
-SSH to the VM, edit \texttt{.env} to set \texttt{TAG=previous-working-tag},
-then re-run \texttt{docker compose pull \&\& docker compose up -d}.
-Alternatively, revert the commit on \texttt{main} and push again — the pipeline
-will rebuild and redeploy automatically.
-\end{notebox}
-
-%%============================================================================
-\section{Environment Variables}
-%%============================================================================
-\label{sec:env}
-
-\subsection{Variable Reference}
-
-\begin{center}
-\renewcommand{\arraystretch}{1.35}
-\begin{tabularx}{0.96\textwidth}{>{\ttfamily\small}p{4.4cm} X}
-  \toprule
-  \rowcolor{paperMid} Variable & Description \\
-  \midrule
-  DB\_NAME               & PostgreSQL database name (\texttt{crudapp}) \\
-  \rowcolor{paperStripe}
-  DB\_USER               & PostgreSQL application user \\
-  DB\_PASSWORD           & Strong password — never commit to git \\
-  \rowcolor{paperStripe}
-  OCIR\_REGISTRY         & Registry endpoint (\texttt{bom.ocir.io}) \\
-  OCIR\_REPO             & Repository path (\texttt{namespace/crudapp}) \\
-  \rowcolor{paperStripe}
-  TAG                    & Image tag (\texttt{latest} or pinned version) \\
-  \midrule
-  \multicolumn{2}{l}{\small\itshape
-    GitHub Actions Secrets only — never stored in the \texttt{.env} file} \\
-  \midrule
-  OCIR\_USERNAME         & \texttt{namespace/user@email.com} for \texttt{docker login} \\
-  \rowcolor{paperStripe}
-  OCIR\_TOKEN            & OCIR authentication token \\
-  OCI\_HOST              & VM public IP address \\
-  \rowcolor{paperStripe}
-  OCI\_USER              & VM SSH username (\texttt{ubuntu}) \\
-  OCI\_SSH\_PRIVATE\_KEY & PEM-format private key \\
-  \bottomrule
-\end{tabularx}
-\end{center}
-
-\subsection{Secret Flow Diagram}
-
-\begin{figure}[H]
+%%─────────────────────────────────────────────────────────────────
+%%  SLIDE 8 — SECRETS
+%%─────────────────────────────────────────────────────────────────
+\begin{frame}{Secrets \& Environment Variables}
+\framesubtitle{Where credentials live and how they flow to containers}
+\vspace{0.15cm}
 \centering
-\begin{tikzpicture}[
-  node distance=1.1cm and 2.8cm,
-  >=Stealth,
-  every node/.style={font=\small}
-]
-  %% ── Left column: Sources ──────────────────────────────────────────────
-  \node[orangeBox=4.2cm] (ghsec)
-  {\textbf{GitHub Secrets}\\[2pt]\footnotesize Encrypted at rest};
+\begin{tikzpicture}[node distance=0.9cm and 2.2cm,
+                    every node/.style={font=\small}]
 
-  \node[cyanBox=4.2cm, below=2.0cm of ghsec] (vmenv)
-  {\textbf{OCI VM \texttt{.env}}\\[2pt]\footnotesize \texttt{chmod 600}};
+  \node[NAmber, minimum width=3.7cm, minimum height=1.4cm] (gh)
+    {\textbf{GitHub Secrets}\\[3pt]
+     \tiny OCIR token\\SSH key $\cdot$ VM IP};
 
-  %% ── Centre column: Middleware ─────────────────────────────────────────
-  \node[flowStep=3.6cm, right=2.8cm of ghsec] (ga)
-  {GitHub Actions\\runner};
+  \node[NTeal, minimum width=3.7cm, minimum height=1.4cm,
+        below=1.7cm of gh] (env)
+    {\textbf{OCI VM \texttt{.env}}\\[3pt]
+     \tiny DB\_NAME $\cdot$ DB\_USER\\DB\_PASSWORD $\cdot$ TAG};
 
-  \node[flowStep=3.6cm, right=2.8cm of vmenv] (dc)
-  {\texttt{docker-compose}\\variable substitution};
+  \node[draw=creamRl, fill=creamDk, rounded corners=4pt,
+        minimum width=3.3cm, minimum height=0.72cm,
+        align=center, font=\sffamily\small, text=inkK,
+        right=2.0cm of gh] (runner)
+    {GitHub Actions\\Runner};
 
-  %% ── Right column: Consumers ──────────────────────────────────────────
-  \node[blueBox=3.4cm,  right=2.4cm of ga]  (be)
-  {\textbf{Backend}\\[2pt]\footnotesize PGHOST, PGPASSWORD\\DATABASE\_URL};
+  \node[draw=creamRl, fill=creamDk, rounded corners=4pt,
+        minimum width=3.3cm, minimum height=0.72cm,
+        align=center, font=\sffamily\small, text=inkK,
+        right=2.0cm of env] (dc)
+    {docker-compose\\substitution};
 
-  \node[cyanBox=3.4cm,  below=0.6cm of be]  (fe)
-  {\textbf{Frontend}\\[2pt]\footnotesize NODE\_ENV=production};
+  \node[NSage, minimum width=3.0cm, minimum height=1.05cm,
+        right=1.9cm of runner] (be)
+    {\textbf{Backend}\\[2pt]\tiny PG credentials};
 
-  \node[grayBox=3.4cm,  below=0.6cm of fe]  (ng)
-  {\textbf{Nginx}\\[2pt]\footnotesize (no env vars needed)};
+  \node[NTeal, minimum width=3.0cm, minimum height=1.05cm,
+        below=0.45cm of be] (fe)
+    {\textbf{Frontend}\\[2pt]\tiny NODE\_ENV};
 
-  %% ── Arrows ────────────────────────────────────────────────────────────
-  \draw[fatarrow] (ghsec) -- (ga)
-    node[midway, above, font=\tiny\itshape, text=inkMed]
-    {docker login · ssh key};
+  \node[NGray, minimum width=3.0cm, minimum height=1.05cm,
+        below=0.45cm of fe] (ng)
+    {\textbf{Nginx}\\[2pt]\tiny no secrets needed};
 
-  \draw[fatarrow] (vmenv) -- (dc)
-    node[midway, above, font=\tiny\itshape, text=inkMed]
-    {variable substitution};
-
-  \draw[fatarrow] (ga.east) -- (be.west)
-    node[midway, above, font=\tiny\itshape, text=inkMed]
-    {OCIR push · SSH};
-
-  \draw[fatarrow] (dc.east) -- (be.west);
-  \draw[fatarrow] (dc.east) -- (fe.west);
-  \draw[fatarrow] (dc.east) -- (ng.west);
-
-  %% ── Connector between left column items ──────────────────────────────
-  \draw[dashedarrow] (ghsec.south) -- (vmenv.north)
-    node[midway, left=4pt, font=\tiny\itshape, text=inkMed]
-    {never transferred};
-
+  \draw[AR] (gh)  -- node[above,font=\tiny\itshape,text=inkM]
+    {login $\cdot$ deploy} (runner);
+  \draw[AR] (env) -- node[above,font=\tiny\itshape,text=inkM]
+    {inject values} (dc);
+  \draw[AR] (runner.east) -- (be.west);
+  \draw[AD]  (dc.east) -- (be.west);
+  \draw[AD]  (dc.east) -- (fe.west);
+  \draw[AD]  (dc.east) -- (ng.west);
+  \draw[AD,color=cRust] (gh.south) -- (env.north)
+    node[midway,left=3pt,font=\tiny\itshape,text=cRust]{never shared};
 \end{tikzpicture}
-\caption{Secret flow: GitHub Secrets stay on the runner; only \texttt{.env}
-         values reach containers on the VM.}
-\end{figure}
+\end{frame}
 
-\subsection{\texttt{.env} File on OCI VM}
+%%─────────────────────────────────────────────────────────────────
+%%  SLIDE 9 — NGINX ROUTING
+%%─────────────────────────────────────────────────────────────────
+\begin{frame}{Nginx Routing}
+\framesubtitle{One port in \textemdash\ smart routing to the right service}
+\vspace{0.1cm}
+\begin{columns}[T]
 
-\begin{lstlisting}[language=bash,
-  caption={Location: \texttt{/home/ubuntu/crudapp/.env}
-           \quad Permissions: \texttt{600}}]
-DB_NAME=crudapp
-DB_USER=cruduser
-DB_PASSWORD=YourStrong_P@ssw0rd!   # never commit this
+\column{0.47\textwidth}
+{\sffamily\small\bfseries\color{cAmber} Routing rules}
+\vspace{5pt}
 
-OCIR_REGISTRY=bom.ocir.io
-OCIR_REPO=your-namespace/crudapp
-TAG=latest
-\end{lstlisting}
-
-%%============================================================================
-\section{Networking \& Reverse Proxy}
-%%============================================================================
-
-\subsection{Network Architecture}
-
-\begin{figure}[H]
-\centering
-\begin{tikzpicture}[>=Stealth, every node/.style={font=\small}]
-
-  %% ── Docker network boundary ─────────────────────────────────────────
-  \draw[draw=accentBlue!25, fill=accentBlue!4,
-        rounded corners=12pt, line width=1.4pt]
-    (-6.2,-6.0) rectangle (6.2,0.55);
-  \node[font=\tiny\sffamily\itshape, text=accentBlue, anchor=south]
-    at (0,-6.0) {Docker Internal Network \texttt{crudapp\_default}};
-
-  %% ── Nginx ───────────────────────────────────────────────────────────
-  \node[
-    draw=accentOrange, fill=nodeOrange,
-    rounded corners=6pt,
-    minimum width=11cm, minimum height=1.55cm,
-    align=center, font=\sffamily\small\bfseries, text=accentOrange,
-    drop shadow={shadow blur steps=6, shadow xshift=2pt,
-                 shadow yshift=-2pt, fill=accentOrange!20}
-  ] (nginx) at (0,0)
-  {\textbf{Nginx — :80}\\[3pt]
-   \footnotesize
-   \texttt{location /\phantom{api/}\ \{proxy\_pass http://frontend:3000\}}
-   \quad
-   \texttt{location /api/ \{proxy\_pass http://backend:5000\}}};
-
-  %% ── Frontend ────────────────────────────────────────────────────────
-  \node[
-    draw=accentCyan, fill=nodeCyan,
-    rounded corners=6pt,
-    minimum width=4.2cm, minimum height=1.4cm,
-    align=center, font=\sffamily\small\bfseries, text=accentCyan,
-    drop shadow={shadow blur steps=5, shadow xshift=1.5pt,
-                 shadow yshift=-1.5pt, fill=accentCyan!20}
-  ] (fe) at (-3.4,-3.2)
-  {\textbf{Frontend}\\[2pt]
-   \footnotesize React SPA\\\footnotesize :3000};
-
-  %% ── Backend ─────────────────────────────────────────────────────────
-  \node[
-    draw=accentBlue, fill=nodeBlue,
-    rounded corners=6pt,
-    minimum width=4.2cm, minimum height=1.4cm,
-    align=center, font=\sffamily\small\bfseries, text=accentBlue,
-    drop shadow={shadow blur steps=5, shadow xshift=1.5pt,
-                 shadow yshift=-1.5pt, fill=accentBlue!20}
-  ] (be) at (3.4,-3.2)
-  {\textbf{Backend}\\[2pt]
-   \footnotesize Express API\\\footnotesize :5000};
-
-  %% ── PostgreSQL ──────────────────────────────────────────────────────
-  \node[
-    draw=accentIndigo, fill=nodeIndigo,
-    rounded corners=6pt,
-    minimum width=4.2cm, minimum height=1.4cm,
-    align=center, font=\sffamily\small\bfseries, text=accentIndigo,
-    drop shadow={shadow blur steps=5, shadow xshift=1.5pt,
-                 shadow yshift=-1.5pt, fill=accentIndigo!20}
-  ] (pg) at (3.4,-5.2)
-  {\textbf{PostgreSQL}\\[2pt]
-   \footnotesize :5432 — internal};
-
-  %% ── pgdata volume ───────────────────────────────────────────────────
-  \node[
-    draw=accentIndigo!40, fill=accentIndigoLight!60,
-    rounded corners=4pt, dashed,
-    minimum width=2.6cm, minimum height=0.85cm,
-    align=center, font=\tiny\itshape, text=accentIndigo
-  ] (vol) at (-0.8,-5.2)
-  {\texttt{pgdata}\\persistent vol.};
-
-  %% ── Nginx → Frontend / Backend arrows ───────────────────────────────
-  \draw[fatarrow] ([xshift=-2.4cm]nginx.south) -- (fe.north)
-    node[midway, left=3pt, font=\tiny\itshape, text=inkMed]
-    {\texttt{location /}};
-
-  \draw[fatarrow] ([xshift=2.4cm]nginx.south) -- (be.north)
-    node[midway, right=3pt, font=\tiny\itshape, text=inkMed]
-    {\texttt{location /api/}};
-
-  \draw[fatarrow] (be) -- (pg)
-    node[midway, right=4pt, font=\tiny\itshape, text=inkMed]
-    {pg driver};
-
-  \draw[dashedarrow] (pg.west) -- (vol.east)
-    node[midway, below=2pt, font=\tiny\itshape, text=inkMed]
-    {mount};
-
-  %% ── External arrow ──────────────────────────────────────────────────
-  \node[
-    draw=inkMed!30, fill=nodeGray,
-    rounded corners=6pt,
-    minimum width=6cm, minimum height=0.95cm,
-    align=center, font=\sffamily\small\bfseries, text=inkMed
-  ] (ext) at (0,2.4)
-  {External Internet \quad \texttt{http://your.vm.ip:80}};
-
-  \draw[fatarrow, line width=2.5pt] (ext) -- (nginx)
-    node[midway, right=5pt, font=\tiny\itshape, text=inkMed]
-    {only public port};
-
+\begin{tikzpicture}
+  \node[draw=cTeal, fill=lTeal, rounded corners=4pt,
+        minimum width=6.4cm, minimum height=0.68cm,
+        align=left, inner xsep=8pt,
+        font=\ttfamily\small, text=inkK] {
+    \textcolor{cTeal}{\textbf{/}}
+    \hfill
+    \textcolor{cTeal}{$\to$ Frontend :3000}
+  };
 \end{tikzpicture}
-\caption{Complete network topology. PostgreSQL is never reachable from outside
-         Docker's internal network.}
-\end{figure}
+\vspace{3pt}
 
-\subsection{Nginx DNS Resolution}
+\begin{tikzpicture}
+  \node[draw=cSage, fill=lSage, rounded corners=4pt,
+        minimum width=6.4cm, minimum height=0.68cm,
+        align=left, inner xsep=8pt,
+        font=\ttfamily\small, text=inkK] {
+    \textcolor{cSage}{\textbf{/api/}}
+    \hfill
+    \textcolor{cSage}{$\to$ Backend :5000}
+  };
+\end{tikzpicture}
+\vspace{3pt}
 
-Docker's internal DNS resolver at \texttt{127.0.0.11} allows Nginx to resolve
-container hostnames dynamically. Without this, Nginx would cache the IP at
-startup and fail if a container restarts with a new internal IP.
+\begin{tikzpicture}
+  \node[draw=cSage, fill=lSage, rounded corners=4pt,
+        minimum width=6.4cm, minimum height=0.68cm,
+        align=left, inner xsep=8pt,
+        font=\ttfamily\small, text=inkK] {
+    \textcolor{cSage}{\textbf{/health}}
+    \hfill
+    \textcolor{cSage}{$\to$ Backend :5000}
+  };
+\end{tikzpicture}
 
-\begin{lstlisting}[language=bash,
-  caption={Relevant extract from \texttt{nginx/nginx.conf}}]
-resolver 127.0.0.11 valid=10s;
-resolver_timeout 5s;
+\vspace{8pt}
+{\sffamily\small\bfseries\color{cInd} Docker DNS}
+\vspace{4pt}
 
-location / {
-    proxy_pass http://frontend:3000;  # resolved via Docker DNS
+\begin{tikzpicture}
+  \node[draw=cInd, fill=lInd, rounded corners=4pt,
+        minimum width=6.4cm, inner sep=7pt,
+        font=\sffamily\small, text=inkK, align=left] {
+    Nginx uses \texttt{127.0.0.11}\\
+    (Docker internal DNS) to resolve\\
+    service names \emph{dynamically}.
+  };
+\end{tikzpicture}
+
+\column{0.51\textwidth}
+{\sffamily\small\bfseries\color{cSage} Request flow}
+\vspace{5pt}
+
+\begin{tikzpicture}[node distance=0.24cm]
+  \node[NTrig] (u)  {Browser: \texttt{GET /api/users}};
+  \node[NFlow, below=0.20cm of u]  (n1)
+    {Nginx matches \texttt{location /api/}};
+  \node[NFlow, below=0.18cm of n1] (n2)
+    {Resolves \texttt{backend} via Docker DNS};
+  \node[NFlow, below=0.18cm of n2] (n3)
+    {Proxies to \texttt{backend:5000/api/users}};
+  \node[NFlow, below=0.18cm of n3] (n4)
+    {Express queries PostgreSQL};
+  \node[NFlow, below=0.18cm of n4] (n5)
+    {JSON response returns to Nginx};
+  \node[NGood, below=0.22cm of n5] (ok)
+    {\CM Browser receives \texttt{\{users:[...]\}}};
+
+  \draw[AR] (u)  -- (n1);
+  \draw[AR] (n1) -- (n2);
+  \draw[AR] (n2) -- (n3);
+  \draw[AR] (n3) -- (n4);
+  \draw[AR] (n4) -- (n5);
+  \draw[AR] (n5) -- (ok);
+\end{tikzpicture}
+
+\end{columns}
+\end{frame}
+
+%%─────────────────────────────────────────────────────────────────
+%%  SLIDE 10 — SUMMARY
+%%─────────────────────────────────────────────────────────────────
+{%
+\setbeamertemplate{footline}{}
+\begin{frame}
+\begin{tikzpicture}[remember picture,overlay]
+  \fill[cAmber]
+    (current page.north west)
+    rectangle ([xshift=0.7cm]current page.south west);
+  \fill[lAmber]
+    ([xshift=0.7cm]current page.north west)
+    rectangle ([xshift=0.85cm]current page.south west);
+  \fill[creamDk]
+    (current page.south west)
+    rectangle ([yshift=1.3cm]current page.south east);
+  \fill[creamRl]
+    ([yshift=1.3cm]current page.south west)
+    rectangle ([yshift=1.16cm]current page.south east);
+\end{tikzpicture}
+
+\vspace{0.3cm}
+\hspace{0.8cm}%
+\begin{minipage}{0.90\textwidth}
+
+  {\sffamily\Large\bfseries\color{inkB} Summary}
+  \par\vspace{2pt}
+  {\color{creamRl}\hrule height 1pt}
+  \vspace{0.4cm}
+
+  \begin{columns}[T]
+
+  \column{0.48\textwidth}
+
+  \begin{tikzpicture}
+    \node[CAmber]
+      {\textcolor{cAmber}{\ding{51}}\ \textbf{One command} \textemdash\ just \texttt{git push}};
+  \end{tikzpicture}
+  \vspace{3pt}
+
+  \begin{tikzpicture}
+    \node[CTeal]
+      {\textcolor{cTeal}{\ding{51}}\ \textbf{Auto migrations} \textemdash\ on every start};
+  \end{tikzpicture}
+  \vspace{3pt}
+
+  \begin{tikzpicture}
+    \node[CSage]
+      {\textcolor{cSage}{\ding{51}}\ \textbf{Data preserved} \textemdash\ pgdata persists};
+  \end{tikzpicture}
+
+  \column{0.48\textwidth}
+
+  \begin{tikzpicture}
+    \node[CRust]
+      {\textcolor{cRust}{\ding{51}}\ \textbf{One public port} \textemdash\ only Nginx};
+  \end{tikzpicture}
+  \vspace{3pt}
+
+  \begin{tikzpicture}
+    \node[CInd]
+      {\textcolor{cInd}{\ding{51}}\ \textbf{Secrets safe} \textemdash\ never committed};
+  \end{tikzpicture}
+  \vspace{3pt}
+
+  \begin{tikzpicture}
+    \node[CSage]
+      {\textcolor{cSage}{\ding{51}}\ \textbf{Easy rollback} \textemdash\ revert or pin tag};
+  \end{tikzpicture}
+
+  \end{columns}
+
+  \vspace{0.45cm}
+  \centering
+  {\color{creamRl}\rule{10cm}{0.8pt}}
+  \vspace{0.25cm}
+
+  {\small\color{inkM}
+    \textbf{Stack:}
+    Node.js $\cdot$ React $\cdot$ PostgreSQL $\cdot$
+    Nginx $\cdot$ Docker $\cdot$ GitHub Actions $\cdot$ OCIR $\cdot$ OCI VM}
+
+\end{minipage}
+\end{frame}
 }
-location /api/ {
-    proxy_pass http://backend:5000;
-}
-location /health {
-    proxy_pass http://backend:5000/health;
-}
-\end{lstlisting}
-
-\subsection{End-to-End Request Flow}
-
-\begin{figure}[H]
-\centering
-\begin{tikzpicture}[
-  node distance=0.40cm,
-  >=Stealth,
-  every node/.style={font=\small}
-]
-  \node[
-    draw=inkMed!35, fill=nodeGray,
-    rounded corners=5pt,
-    minimum width=11.5cm, minimum height=0.95cm,
-    align=center
-  ] (user)
-  {\textbf{User browser:}
-   \texttt{GET http://your.vm.ip/api/users}};
-
-  \node[flowStep=11.5cm, below=0.42cm of user] (n1)
-  {Nginx: match \texttt{location /api/}
-   · resolve \texttt{backend} hostname via Docker DNS \texttt{127.0.0.11}};
-
-  \node[flowStep=11.5cm, below=0.34cm of n1] (n2)
-  {Proxy to \texttt{http://172.x.x.x:5000/api/users}
-   · add \texttt{X-Real-IP} and \texttt{X-Forwarded-*} headers};
-
-  \node[flowStep=11.5cm, below=0.34cm of n2] (b1)
-  {Express router handles request
-   · authenticates · queries PostgreSQL connection pool};
-
-  \node[flowStep=11.5cm, below=0.34cm of b1] (b2)
-  {PostgreSQL returns result rows
-   · Express serialises to JSON response};
-
-  \node[flowStep=11.5cm, below=0.34cm of b2] (n3)
-  {Nginx forwards JSON response back to the originating client};
-
-  \node[flowOK=11.5cm, below=0.42cm of n3] (done)
-  {\cmark Browser receives \texttt{\{"users": [\ldots]\}}
-   · React renders the UI};
-
-  \foreach \a/\b in {user/n1, n1/n2, n2/b1, b1/b2, b2/n3, n3/done}
-    \draw[fatarrow] (\a) -- (\b);
-
-\end{tikzpicture}
-\caption{Complete request lifecycle for \texttt{GET /api/users}.}
-\end{figure}
-
-%%============================================================================
-\section{Deployment Process}
-%%============================================================================
-
-\subsection{Pre-Deployment Checklist}
-
-\begin{itemize}[leftmargin=1.8em, itemsep=5pt, topsep=4pt]
-  \item[\cmark] All code committed and pushed to the \texttt{main} branch
-  \item[\cmark] All 8 GitHub Actions Secrets configured
-        (see Section~\ref{sec:env})
-  \item[\cmark] OCI VM \texttt{.env} file created with \texttt{chmod 600}
-  \item[\cmark] OCI Security List: TCP Ingress rule added for port~80
-  \item[\cmark] SSH private key registered on VM and matching GitHub Secret
-  \item[\cmark] OCIR credentials verified in VM \texttt{.env}
-\end{itemize}
-
-\subsection{Triggering a Deployment}
-
-\begin{lstlisting}[language=bash, caption={Developer side —
-  the only action ever needed to deploy}]
-git add .
-git commit -m "feat: add new feature"
-git push origin main
-# CI/CD pipeline starts automatically — no further action required
-\end{lstlisting}
-
-\subsection{Verifying a Deployment on the OCI VM}
-
-\begin{lstlisting}[language=bash, caption={Post-deployment verification commands}]
-ssh ubuntu@your.vm.ip
-
-# Confirm all 4 containers are running
-docker ps
-
-# Stream live logs per service
-docker compose logs -f backend     # migrations + Express startup
-docker compose logs -f frontend    # serve startup
-docker compose logs -f nginx       # proxy requests
-docker compose logs -f postgres    # health events
-
-# Check which migrations have been applied
-docker compose exec backend npm run migrate:status
-
-# Quick health check
-curl http://localhost/health
-# Expected: {"success":true,"message":"Server is running",...}
-\end{lstlisting}
-
-%%============================================================================
-\section{Troubleshooting}
-%%============================================================================
-
-\begin{longtable}{>{\bfseries\small}p{3.8cm}
-                  >{\small}p{3.8cm}
-                  >{\small}p{5.6cm}}
-  \toprule
-  \rowcolor{paperMid} Issue & Likely Cause & Resolution \\
-  \midrule
-  \endfirsthead
-  \rowcolor{paperMid} Issue & Likely Cause & Resolution \\
-  \midrule
-  \endhead
-  \bottomrule
-  \endlastfoot
-
-  Push image fails &
-    OCIR credentials invalid &
-    Verify Secrets: \texttt{OCIR\_USERNAME}, \texttt{OCIR\_TOKEN},
-    \texttt{OCIR\_REGISTRY} \\[3pt]
-  \rowcolor{paperStripe}
-  SSH connection fails &
-    Key format wrong &
-    Must be PEM format; run
-    \texttt{ssh-keygen -p -N "" -m pem -f id\_rsa} \\[3pt]
-
-  App won't start on VM &
-    Images not pulled &
-    \texttt{docker compose pull -{}-no-parallel}
-    then \texttt{docker compose up -d} \\[3pt]
-  \rowcolor{paperStripe}
-  Migrations fail &
-    Syntax error in file &
-    Check \texttt{migrations/} files against node-pg-migrate docs \\[3pt]
-
-  Backend can't reach DB &
-    Wrong \texttt{DATABASE\_URL} &
-    Format must be:
-    \texttt{postgres://user:pass@postgres:5432/db} \\[3pt]
-  \rowcolor{paperStripe}
-  Frontend returns 404 &
-    Nginx config wrong &
-    Ensure \texttt{location /} proxies to
-    \texttt{http://frontend:3000} \\[3pt]
-
-  Port 80 unreachable &
-    OCI firewall &
-    OCI Console $\to$ VCN $\to$ Security List
-    $\to$ add TCP Ingress for port~80 \\[3pt]
-  \rowcolor{paperStripe}
-  Disk full on VM &
-    Stale images &
-    \texttt{docker image prune -a \&\&
-    docker container prune} \\[3pt]
-
-  Containers restarting &
-    App crash on start &
-    \texttt{docker compose logs \{service\}}
-    to inspect the error \\[3pt]
-  \rowcolor{paperStripe}
-  High CPU usage &
-    Connection pool exhausted &
-    Review \texttt{max\_connections=50} in the postgres service config \\
-
-\end{longtable}
-
-\subsection{Diagnostic Command Reference}
-
-\begin{lstlisting}[language=bash,
-  caption={Essential debugging commands on the OCI VM}]
-# Stream all service logs
-docker compose logs -f
-
-# Inspect env vars inside a container
-docker compose exec backend env | grep PG
-
-# Query the migrations table directly
-docker compose exec postgres \
-  psql -U cruduser -d crudapp -c "SELECT * FROM pgmigrations;"
-
-# Check disk and image usage
-docker system df
-
-# Restart a single service without a full redeploy
-docker compose restart backend
-
-# Network connectivity tests between containers
-docker compose exec backend ping frontend
-docker compose exec backend curl http://backend:5000/health
-\end{lstlisting}
-
-%%============================================================================
-\section{Architecture Summary}
-%%============================================================================
-
-\begin{greenbox}
-\renewcommand{\arraystretch}{1.45}
-\begin{tabularx}{\linewidth}{>{\bfseries}p{3.8cm} X}
-  \cmark Scalability &
-    Each service is independently deployable and can scale horizontally
-    without affecting others \\
-  \cmark Reliability &
-    Health checks, automatic restart policies, and persistent volumes
-    prevent data loss \\
-  \cmark Full Automation &
-    Every \texttt{git push main} triggers build $\to$ push $\to$ deploy
-    end-to-end with no manual steps \\
-  \cmark Security &
-    Secrets stay in GitHub; only \texttt{.env} lives on the VM with
-    \texttt{chmod 600}; no port other than 80 is externally reachable \\
-  \cmark Maintainability &
-    Clear service boundaries, versioned schema migrations, and
-    structured container logs \\
-  \cmark Production-Ready &
-    Follows industry-standard containerised application architecture
-    patterns \\
-\end{tabularx}
-\end{greenbox}
-
-\vspace{20pt}
-\begin{center}
-  \textcolor{ruleColor}{\hdashrule{9cm}{1.2pt}{3pt}}\\[12pt]
-  {\small\color{inkMed}
-    Every \texttt{git push main} triggers a full build-push-deploy cycle.\\
-    Database migrations run automatically on container start.\\
-    The \texttt{pgdata} volume preserves all data across every deployment.\\[6pt]
-    \textbf{Zero manual intervention required.}}\\[12pt]
-  \textcolor{ruleColor}{\hdashrule{9cm}{1.2pt}{3pt}}
-\end{center}
 
 \end{document}
