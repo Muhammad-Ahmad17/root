@@ -46,16 +46,13 @@ jobs:
 
       - name: Prepare SSL certificates for nginx
         run: |
-          # Create certificates directory
           mkdir -p nginx/certs/cicd.aahmad.app
-          
-          # Decode and save SSL certificates from GitHub Secrets
+
           echo "${{ secrets.SSL_CERTIFICATE }}" | base64 -d > nginx/certs/cicd.aahmad.app/fullchain.pem
-          echo "${{ secrets.SSL_PRIVATE_KEY }}" | base64 -d > nginx/certs/cicd.aahmad.app/privkey.pem
-          echo "${{ secrets.SSL_CHAIN }}" | base64 -d > nginx/certs/cicd.aahmad.app/chain.pem
-          echo "${{ secrets.SSL_CERT }}" | base64 -d > nginx/certs/cicd.aahmad.app/cert.pem
-          
-          # Verify certificates exist
+          echo "${{ secrets.SSL_PRIVATE_KEY }}"  | base64 -d > nginx/certs/cicd.aahmad.app/privkey.pem
+          echo "${{ secrets.SSL_CHAIN }}"        | base64 -d > nginx/certs/cicd.aahmad.app/chain.pem
+          echo "${{ secrets.SSL_CERT }}"         | base64 -d > nginx/certs/cicd.aahmad.app/cert.pem
+
           ls -la nginx/certs/cicd.aahmad.app/
 
       - name: Build & push nginx image (with SSL certificates)
@@ -94,7 +91,7 @@ jobs:
             mkdir -p "$DEPLOY_PATH"
             cd "$DEPLOY_PATH"
 
-            # Generate .env from GitHub Secrets (clean format, no extra whitespace)
+            # Generate .env from GitHub Secrets
             printf '%s\n' \
               'DB_NAME=${{ secrets.DB_NAME }}' \
               'DB_USER=${{ secrets.DB_USER }}' \
@@ -103,21 +100,18 @@ jobs:
               'OCIR_REPO=${{ secrets.OCIR_REPO }}' \
               'TAG=latest' > .env
 
-            # Verify .env was created successfully
             if [ ! -f .env ]; then
               echo "✗ Error: .env file not created"
               exit 1
             fi
             echo "✓ .env file generated from GitHub Secrets"
 
-            # Download docker-compose.yml from GitHub if not present
-            if [ ! -f docker-compose.yml ]; then
-              echo "Downloading docker-compose.yml from GitHub..."
-              wget -q https://raw.githubusercontent.com/${{ github.repository }}/main/docker-compose.yml
-              echo "✓ docker-compose.yml downloaded"
-            fi
+            # Always overwrite docker-compose.yml with latest from repo
+            wget -q -O docker-compose.yml \
+              https://raw.githubusercontent.com/${{ github.repository }}/main/docker-compose.yml
+            echo "✓ docker-compose.yml updated"
 
-            # Login to OCIR on the VM using credentials from GitHub Secrets
+            # Login to OCIR on the VM
             echo "${{ secrets.OCIR_TOKEN }}" | \
               docker login "${{ secrets.OCIR_REGISTRY }}" \
               -u "${{ secrets.OCIR_USERNAME }}" --password-stdin
@@ -127,11 +121,28 @@ jobs:
             docker compose pull
             echo "✓ Images pulled from OCIR"
 
-            # Restart containers with new images
-            docker compose up -d --remove-orphans
+            # Explicitly tear down nginx so port 443 socket is fully released
+            # before the new container tries to bind it
+            docker compose stop nginx
+            docker compose rm -f nginx
+            sleep 2
+            echo "✓ nginx torn down, ports released"
+
+            # Bring all containers up with fresh images
+            docker compose up -d --force-recreate --remove-orphans
             echo "✓ Containers started/updated"
 
-            # Clean up old dangling images to save disk space
+            # Wait for nginx to initialize then verify both ports are bound
+            sleep 5
+            docker ps --filter "name=nginx" --format "{{.Ports}}" | grep -q "0.0.0.0:443" \
+              || (echo "✗ Port 443 not bound! nginx logs:" && docker compose logs nginx && exit 1)
+            echo "✓ Port 443 confirmed bound"
+
+            docker ps --filter "name=nginx" --format "{{.Ports}}" | grep -q "0.0.0.0:80" \
+              || (echo "✗ Port 80 not bound! nginx logs:" && docker compose logs nginx && exit 1)
+            echo "✓ Port 80 confirmed bound"
+
+            # Clean up dangling images
             docker image prune -f
             echo "✓ Old images cleaned up"
 
